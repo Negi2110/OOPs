@@ -1,0 +1,98 @@
+Here are **clean, crisp, interview-ready notes** based exactly on your slide **Copy Constructors**:
+
+---
+
+# ✅ **Copy Constructors – Interview Notes**
+
+### **1. What is a Copy Constructor?**
+
+A **copy constructor** is a special constructor used to initialize a new object from an existing object of the same class.
+
+Syntax:
+
+```cpp
+ClassName(const ClassName& identifier);
+```
+
+* Takes **one parameter** → a **reference** to an object of the same class.
+* Usually marked **const** so the original object cannot be modified.
+
+---
+
+### **2. Why Do We Use Copy Constructors?**
+
+Because when you create a new object as a copy of another, the compiler needs to know **how to copy** the class members.
+
+Example:
+
+```cpp
+MyClass a;
+MyClass b = a;   // copy constructor is invoked
+```
+
+---
+
+### **3. Default vs User-Defined Copy Constructor**
+
+#### **🔸 Default (Compiler-Generated) Copy Constructor**
+
+* Created automatically when you do not define your own.
+* Performs a **shallow copy** (member-wise copy).
+* Copies pointers **as addresses**, causing both objects to share memory.
+* Dangerous for classes that manage dynamic memory.
+
+#### **🔸 User-Defined Copy Constructor**
+
+* Overrides default behavior.
+* Needed when your class has:
+
+  * Pointers
+  * Dynamic memory (`new`)
+  * Resources (files, sockets)
+* Allows you to implement a **deep copy**.
+
+---
+
+### **4. When is the Copy Constructor Invoked?**
+
+Copy constructor is automatically called when:
+
+1. **Object is initialized from another object**
+
+   ```cpp
+   MyClass b = a;
+   ```
+2. **Object is passed by value** to a function
+3. **Object is returned by value** from a function
+4. When elements are **initialized in arrays** or **containers**
+5. When using **initializer lists**
+
+---
+
+### **5. Shallow Copy vs Deep Copy**
+
+* **Shallow copy** → default behavior, pointer addresses copied, shared memory.
+* **Deep copy** → allocate new memory & copy values → both objects independent.
+
+---
+
+### **6. Why the parameter is passed as `const ClassName&`?**
+
+* Using **reference (&)** avoids creating a copy → prevents infinite recursion.
+* Using **const** prevents modifying the original object during copying.
+
+---
+
+# 📌 **Copy-Paste Interview Summary**
+
+* A copy constructor initializes a new object from an existing one.
+* Syntax: `ClassName(const ClassName&)`.
+* Called during initialization, pass-by-value, return-by-value.
+* Default copy constructor creates a **shallow copy**.
+* User-defined copy constructor is needed for **deep copy**.
+* Shallow copies share memory → dangerous when using pointers.
+* Deep copies allocate separate memory and safely copy data.
+
+---
+“The copy constructor must take a reference because pass-by-value requires copying the argument,
+ which would invoke the copy constructor again and again, causing infinite recursion and stack overflow.”

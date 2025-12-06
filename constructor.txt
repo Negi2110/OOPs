@@ -1,0 +1,184 @@
+Constructors – Notes
+
+A constructor is a special function that runs automatically when an object is created.
+
+When we create a static object like:
+MyClass myObject;
+→ This calls the default constructor.
+
+Important Warning:
+The syntax MyClass myObject(); does NOT create an object — it actually declares a function named myObject that returns a MyClass object. (This is known as the Most Vexing Parse in C++.)
+
+You can define your own constructor(s).
+They are used mainly for initializing values inside a class.
+
+Constructor Rules
+
+Must have the same name as the class.
+
+Cannot have a return type (not even void).
+
+Usually declared public so objects can be created from outside the class.
+
+
+Default Constructors – Notes
+
+A default constructor is a constructor that can be called without passing any parameters.
+
+If you do not explicitly write one, the compiler may automatically generate a default constructor for your class.
+
+A compiler-generated default constructor:
+
+Allocates memory for the object
+
+Does NOT initialize values (built-in types like int, float, etc. remain uninitialized)
+
+You can define your own default constructor to initialize member variables.
+
+
+Here are **clean, copy-paste–ready notes** based on your slide on *Default Constructors with Default Parameters*:
+
+---
+
+## **Default Constructors – Notes (with Default Parameters)**
+
+* A default constructor can also have **parameters**, as long as **each parameter has a default value**.
+* This still allows the constructor to be called **without passing any arguments**.
+
+---
+
+### **Example**
+
+```cpp
+class MyClass {
+private:
+    int value;
+
+public:
+    MyClass(int v = 0) {   // Constructor with default parameter
+        value = v;
+    }
+};
+```
+
+* This constructor works both ways:
+
+  * `MyClass obj;` → uses default value `v = 0`
+  * `MyClass obj(10);` → uses provided value `10`
+
+---
+
+### **Important Rule**
+
+* If you define a constructor with default parameters **AND** also define a separate no-argument default constructor, the compiler will throw an error due to **ambiguity**.
+
+---
+
+
+Here are **clean, copy-paste–ready notes** for **Non-Default Constructors** exactly based on your slide:
+
+---
+
+## **Non-Default Constructors – Notes**
+
+* A class can have **multiple overloaded constructors**, each with different parameter lists.
+* These constructors are used to initialize objects with different sets of values.
+
+---
+
+### **Example of Overloaded Non-Default Constructors**
+
+```cpp
+class MyClass {
+private:
+    int a, b;
+
+public:
+    MyClass(int n) {   // Constructor 1
+        a = n;
+        b = 0;
+    }
+
+    MyClass(int n, int m) {   // Constructor 2
+        a = n;
+        b = m;
+    }
+};
+```
+
+---
+
+### **Important Points**
+
+* If you define **any** non-default constructor (i.e., a constructor with parameters),
+  **the compiler will NOT automatically generate a default constructor**.
+* Therefore, if your class has only parameterized constructors and **no default constructor**,
+  writing this will produce a **compiler error**:
+
+  ```cpp
+  MyClass myObject;   // ❌ Error: no default constructor
+  ```
+
+---
+Here are clean, copy-paste-ready **notes** based exactly on your slide about *Invoking a Non-Default Constructor*:
+
+---
+
+## **Invoking a Non-Default Constructor – Notes**
+
+### **1. Creating objects with a parameterized constructor**
+
+If a class has **only a parameterized constructor**, then every object must be created by passing the required arguments.
+
+---
+
+### ✔ **Dynamic (heap) object creation**
+
+```cpp
+MyClass *myObject = new MyClass(20);
+```
+
+### ✔ **Static (stack) object creation**
+
+```cpp
+MyClass myObject(30);
+```
+
+Both are valid because they supply the required parameter.
+
+---
+
+## **2. Arrays of objects NEED a default constructor**
+
+When you declare an array like:
+
+```cpp
+MyClass myObjects[5];
+```
+
+The compiler must create 5 objects using the **default constructor**.
+
+### ❌ If your class does NOT have a default constructor
+
+→ The array declaration **will NOT compile**.
+
+**Reason:**
+The compiler automatically calls `MyClass()` for each element,
+but `MyClass()` does not exist.
+
+---
+
+## **Copy-Paste Summary**
+
+* Parameterized constructors require parameters during object creation.
+* Works for both **heap** and **stack** objects:
+
+  * `MyClass obj(10);`
+  * `MyClass* p = new MyClass(10);`
+* Declaring an array of objects **requires a default constructor**.
+* Without a default constructor, this fails:
+
+  ```cpp
+  MyClass arr[5];   // ❌ Error
+  ```
+

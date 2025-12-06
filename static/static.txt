@@ -1,0 +1,120 @@
+Here is a **clean, interview-ready explanation + fully commented code** for **Static Data Members**, exactly matching your slide.
+
+---
+
+# ✅ **Static Data Members – Interview Notes**
+
+### ✔ What is a static data member?
+
+A **static data member**:
+
+* Belongs **to the class**, not to any specific object
+* Only **one copy** exists in memory for the entire class
+* Shared by **all objects** of that class
+
+---
+
+# 🧠 Key Properties of Static Members
+
+### ✔ 1. Shared across all objects
+
+If 10 objects are created, they **all access the same static variable**.
+
+### ✔ 2. Must be defined outside the class
+
+Because static variables are stored separately in memory.
+
+### ✔ 3. Not initialized inside the constructor
+
+Constructor runs per-object.
+Static members must be initialized **once only**.
+
+### ✔ 4. Can be accessed without creating an object
+
+Using:
+
+```cpp
+ClassName::staticMember;
+```
+
+---
+
+# ✅ **Code Example (Fully Explained)**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Player {
+public:
+    // Static data member shared by ALL Player objects
+    static int instances;
+
+    // Constructor increments the static counter
+    Player() {
+        instances++;  
+        cout << "Player created. Total = " << instances << endl;
+    }
+};
+
+// Definition (and optional initialization) of the static member
+// Required in C++! Storage allocated here.
+int Player::instances = 0;
+
+int main() {
+
+    Player p1;   // instances = 1
+    Player p2;   // instances = 2
+    Player p3;   // instances = 3
+
+    // Access static member without object
+    cout << "Final instance count = " << Player::instances << endl;
+
+    return 0;
+}
+```
+
+---
+
+# ✔ **Expected Output**
+
+```
+Player created. Total = 1
+Player created. Total = 2
+Player created. Total = 3
+Final instance count = 3
+```
+
+---
+
+# 🔍 Why static variable is not initialized in constructor?
+
+Because:
+
+* Constructor runs every time an object is created.
+* Static variables should be initialized **only once**.
+* So initialization must be done **outside the class**.
+
+```cpp
+int Player::instances = 0;  // correct initialization
+```
+
+---
+
+# 📌 **Copy-Paste Interview Summary**
+
+* Static members belong to **the class**, not individual objects.
+* Only **one shared copy** exists in memory.
+* Must be **defined outside** the class.
+* Cannot be initialized in the constructor.
+* Access using `ClassName::member`.
+* Useful for:
+
+  * Counting objects
+  * Configuration flags
+  * Shared resources
+  * Singleton patterns
+
+---
+
+If you want, I can also explain **static member functions** and how they differ from normal functions.

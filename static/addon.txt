@@ -1,0 +1,125 @@
+Great question — and the answer is **YES and NO**, depending on the type of data member.
+
+Let me explain it clearly.
+
+---
+
+# ✅ **1. For NORMAL (non-static) data members**
+
+You **cannot** assign a value to them directly inside the class body.
+
+❌ Not allowed:
+
+```cpp
+class A {
+    int x = 10;   // (Before C++11 this was illegal; now allowed but only for simple initialization)
+};
+```
+
+Before C++11, this caused an error.
+
+After C++11, this is called **in-class member initialization** and is allowed **ONLY for fundamental types or values**.
+
+BUT the traditional, correct way is:
+
+✔ Allowed:
+
+```cpp
+class A {
+    int x;
+public:
+    A() { x = 10; }     // Initialize inside constructor
+};
+```
+
+### **BUT WHY is constructor preferred?**
+
+Because:
+
+* It gives flexibility
+* It allows dynamic initialization
+* It avoids repeated initializations
+* It works with all compilers and all versions of C++
+
+---
+
+# ✅ **2. For STATIC data members**
+
+You **cannot initialize them inside the class**.
+
+❌ Not allowed:
+
+```cpp
+class Player {
+    static int count = 0;   // ❌ ERROR
+};
+```
+
+✔ Must be done **outside** the class:
+
+```cpp
+int Player::count = 0;    // Correct
+```
+
+Why?
+
+Because static members belong to the **class**, not objects.
+So they need separate global storage, not object storage.
+
+---
+
+# ✅ **3. For const static integral members**
+
+These *can* be initialized inside the class:
+
+✔ Allowed:
+
+```cpp
+class A {
+    static const int size = 10;   // allowed
+};
+```
+
+---
+
+# ✅ **4. Pointer or dynamic memory**
+
+You **cannot** initialize them inside the class directly.
+
+❌ Not allowed:
+
+```cpp
+class A {
+    int* p = new int(5);    // ❌ Bad practice in class body
+};
+```
+
+✔ Must be in constructor:
+
+```cpp
+A() { p = new int(5); }
+```
+
+---
+
+# 🎯 **Final Summary (Copy-Paste for Interview)**
+
+| Type of Data Member      | Can it be initialized inside class?  | Correct Place       |
+| ------------------------ | ------------------------------------ | ------------------- |
+| Normal variable          | ✔ (C++11+) but constructor preferred | Constructor         |
+| Static variable          | ❌ No                                 | Outside class       |
+| const static int         | ✔ Yes                                | Inside class        |
+| Pointer / dynamic memory | ❌ No                                 | Constructor         |
+| Reference                | ❌ No                                 | Initialization list |
+
+---
+
+# 🧠 Answer to Your Question:
+
+> “In class we can't set the value of data member only inside constructor we can do this??”
+
+✔ **Correct for static members → cannot set inside class**
+✔ **Correct for pointer/dynamic members → use constructor**
+✔ **Normal members → can set in class (C++11+) but constructor is preferred**
+
+

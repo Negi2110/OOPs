@@ -1,0 +1,125 @@
+Here is the **clean, simple, interview-ready explanation** of your Polymorphism slide.
+I’ll rewrite each bullet point in clear English so you can remember it easily.
+
+---
+
+# ✅ **Polymorphism — Clean Explanation**
+
+## ✔ 1. Default C++ function calls are *statically bound*
+
+This means:
+
+* The compiler decides **which function to call** during compile-time.
+* This works when the exact object type is known at compile-time.
+
+Example of static binding:
+
+```cpp
+obj.print();    // compiler knows obj type
+```
+
+---
+
+## ✔ 2. Static binding happens at compile time
+
+Compiler matches function calls to functions **before the program runs**.
+
+---
+
+## ✔ 3. Dynamic binding (runtime polymorphism)
+
+Dynamic binding = deciding which function to call **during runtime**.
+
+This happens when:
+
+* You call a function through a **base class pointer/reference**
+* The actual object type is only known at runtime
+
+---
+
+## ✔ 4. Dynamic binding requires the `virtual` keyword
+
+To make a function *dynamically bound*, you must declare it as:
+
+```cpp
+virtual void speak();
+```
+
+Without `virtual`, C++ uses static binding.
+
+---
+
+## ✔ 5. Subclasses override functions of the base class
+
+A derived class can define a function with the **same signature**:
+
+```cpp
+class Animal {
+public:
+    virtual void speak() { cout << "Animal"; }
+};
+
+class Dog : public Animal {
+public:
+    void speak() override { cout << "Dog"; }
+};
+```
+
+---
+
+## ✔ 6. If a base class pointer holds a derived object → derived function is called
+
+Example:
+
+```cpp
+Animal* a = new Dog();
+a->speak();  
+```
+
+Output:
+
+```
+Dog
+```
+
+Why?
+
+Because `speak()` is **virtual** → runtime polymorphism.
+
+---
+
+# ⭐ Interview Summary You Should Give
+
+If asked “What is polymorphism?”:
+
+> **Polymorphism allows a base-class pointer or reference to refer to objects of derived classes and call their overridden functions at runtime. This is possible through dynamic binding, which requires the `virtual` keyword.**
+
+If asked “What is static vs dynamic binding?”:
+
+| Static Binding                        | Dynamic Binding                             |
+| ------------------------------------- | ------------------------------------------- |
+| Happens at compile time               | Happens at runtime                          |
+| Default behavior                      | Requires `virtual`                          |
+| Function chosen based on pointer type | Function chosen based on actual object type |
+
+---
+
+# ⭐ Small Example (VERY IMPORTANT)
+
+```cpp
+class Base {
+public:
+    virtual void show() { cout << "Base\n"; }
+};
+
+class Derived : public Base {
+public:
+    void show() override { cout << "Derived\n"; }
+};
+
+Base* b = new Derived();
+b->show();   // OUTPUT: Derived
+```
+
+Because of **virtual**, the correct overridden method runs.
+

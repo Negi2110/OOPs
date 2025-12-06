@@ -1,0 +1,194 @@
+Here are **clean, crisp, interview-ready notes** based on your slide **Shallow vs Deep Copies**:
+
+---
+“In shallow copy we copy the pointer, so both objects share the same memory.
+In deep copy we allocate new memory and copy the value, so each object has its own independent memory.”
+# ✅ **Shallow vs Deep Copies – Interview Notes**
+
+## 🟠 **Shallow Copy**
+
+* Created by **default copy constructor** (compiler-generated).
+* Performs a **member-wise copy**:
+
+  * All data members are copied **bit-by-bit**.
+  * This includes **pointer addresses**, not the memory they point to.
+* Result:
+
+  * Both objects’ pointers point to **the same memory location**.
+  * Modifying memory through one object affects the other.
+* Problems:
+
+  * Double-free errors (both objects try to delete the same memory).
+  * Undefined behavior.
+  * Dangerous when the class uses dynamic memory (`new`).
+
+---
+
+## 🟢 **Deep Copy**
+
+* Implemented by writing a **custom copy constructor**.
+* Instead of copying the pointer address, it:
+
+  * Allocates **new memory**.
+  * Copies the **actual data** into that new memory.
+* Result:
+
+  * Two **independent** objects.
+  * Each object has its **own memory**.
+  * No ownership conflicts.
+
+---
+
+## 🔧 **When Deep Copy is Needed**
+
+Deep copy is required when your class contains:
+
+* Raw pointers
+* Dynamically allocated memory (`new`)
+* Resources like:
+
+  * File handles
+  * Network sockets
+  * GPU buffers
+
+In such cases:
+
+* You must implement:
+  ✔ Custom Copy Constructor
+  ✔ Custom Copy Assignment Operator
+  ✔ Destructor
+  (This is known as **The Rule of 3**)
+
+---
+
+# 📌 **Quick Summary (Copy-Paste for Interview)**
+
+### **Shallow Copy**
+
+* Copies data members exactly as they are.
+* Pointer members copy only **addresses**, not the data.
+* Both objects share the same memory.
+* Dangerous: double delete, memory corruption.
+
+### **Deep Copy**
+
+* Allocates new memory and copies data manually.
+* Each object owns its own memory.
+* Safe and required when using dynamically allocated memory.
+
+---
+
+# 🔍 **Simple Code Example (Interview Safe)**
+
+### **Shallow Copy (default behavior)**
+
+```cpp
+class A {
+public:
+    int* ptr;
+
+    A(int val) {
+        ptr = new int(val);
+    }
+    // No custom copy constructor → shallow copy
+};
+```
+
+### **Deep Copy (user-defined)**
+
+```cpp
+A(const A& obj) {
+    ptr = new int(*obj.ptr);  // deep copy
+}
+```
+
+---
+
+
+
+
+
+
+
+Yes — **EXACTLY RIGHT.**
+You’ve understood shallow copy perfectly.
+
+---
+
+# ✅ **Shallow Copy Behavior (Very Important)**
+
+### In a shallow copy:
+
+* Both objects share the **same memory** for pointer members.
+* So modifying the value through one object **changes the other**, because they're both pointing to the *same location*.
+
+---
+
+# 🔍 Example:
+
+```cpp
+class MyClass {
+public:
+    int* ptr;
+    MyClass(int x) {
+        ptr = new int(x);
+    }
+    // NO copy constructor → shallow copy
+};
+
+MyClass obj1(10);
+MyClass obj2 = obj1;   // shallow copy
+```
+
+Memory diagram:
+
+```
+obj1.ptr ───► [10]
+obj2.ptr ───┘ 
+```
+
+---
+
+# 🔥 Change obj1 → obj2 also changes
+
+```cpp
+*obj1.ptr = 50;
+cout << *obj2.ptr;  // OUTPUT: 50
+```
+
+Because:
+
+* obj1.ptr and obj2.ptr **point to the same memory**.
+* You changed the memory, so **both see the change**.
+
+---
+
+# ⚠ Side Effects of Shallow Copy:
+
+* Shared memory → modifying one modifies the other
+* Double delete crash when destructors run
+* Both objects think they own the same memory
+
+---
+
+# 🟢 Deep Copy Fixes This
+
+In deep copy:
+
+```cpp
+ptr = new int(*obj.ptr);
+```
+
+Both objects get **separate memory**, so modifying one does NOT affect the other.
+
+---
+
+# 🎯 Final Statement (Copy-Paste)
+
+> In shallow copy, pointer members are copied by pointer value, so both objects point to the same memory.
+> Changing one object’s data automatically reflects in the other.
+> Deep copy allocates new memory so both objects are independent.
+
+---
+
+If you want, I can show you **a running example** where shallow copy causes a crash and deep copy solves it.

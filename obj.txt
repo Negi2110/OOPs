@@ -1,0 +1,113 @@
+Here are **clean, copy-paste–ready notes** based on your slide about **Initializing Data Members**:
+
+---
+
+## **Initializing Data Members – Notes**
+
+* Unlike global variables, **class data members are NOT automatically initialized** with default values.
+* If a data member is not explicitly initialized, its value is **undefined** (contains garbage).
+* **Data members cannot be initialized at the point of declaration** inside the class (except `static const` members).
+
+---
+
+### ❌ **Invalid example (will NOT compile)**
+
+```cpp
+class MyClass {
+public:
+    int id = 1;   // ❌ Not allowed (except static const)
+};
+```
+
+Only **static const** data members can be initialized inside the class.
+
+---
+
+## **Correct way: Initialize inside the constructor**
+
+### ✔ Valid example
+
+```cpp
+class MyClass {
+public:
+    int id;
+
+    MyClass() {
+        id = 1;   // ✔ Correct way
+    }
+};
+```
+
+This is the normal practice:
+👉 Initialize member variables inside the **constructor**.
+
+---
+
+## **Copy-Paste Summary**
+
+* Class members are **not auto-initialized** like global variables.
+* Uninitialized data members contain **garbage values**.
+* You **cannot initialize** normal data members where they are defined.
+* Only `static const` members may be initialized inside the class.
+* Best practice: **initialize data members inside the constructor**.
+
+---
+
+If you want, I can combine all constructor-related slides into a single polished PDF for study.
+
+
+
+Here are **clean, copy-paste–ready notes** based exactly on your slide about **Member Initialisers**:
+
+---
+
+## **Member Initialiser – Notes**
+
+* A **member initializer list** is a shorthand way to assign values to data members.
+* Works **as if each data member had its own constructor**.
+* Used immediately after the constructor’s parameter list, starting with a **colon (`:`)**.
+* Multiple members are separated by **commas**.
+* **Must be written in the constructor’s definition only**, not in the declaration (header).
+
+---
+
+### **Syntax**
+
+```cpp
+ClassName(type param1, type param2) 
+    : memVar1(param1), memVar2(param2) 
+{
+}
+```
+
+---
+
+### **Example**
+
+```cpp
+class MyClass {
+private:
+    int value;
+
+public:
+    MyClass(int theValue) 
+        : value(theValue)    // member initializer list
+    {
+    }
+};
+```
+
+---
+
+## **Copy-Paste Summary**
+
+* Member initializer lists provide a **clean and efficient method** to initialize member variables.
+* Syntax appears **after the constructor parameters** with a colon.
+* Recommended for:
+
+  * Initializing data members
+  * Initializing const variables
+  * Initializing reference members
+  * Initializing base classes
+* Only allowed in the **constructor definition**, not the declaration.
+

@@ -1,0 +1,103 @@
+To **tackle this error**, you must **explicitly call the parent (Model) constructor** from the child (Car) constructor using a **member initializer list**.
+
+Because:
+
+* `Model` **does NOT have a default constructor**
+* The compiler **must call the base class constructor first**
+* Therefore, YOU must tell the compiler **which base constructor to call**
+
+---
+
+# ✅ **Corrected Code (Fix Applied)**
+
+This will compile successfully:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Model {
+private:
+    int id;
+
+public:
+//or we can add  Model() {} here also
+    Model(int modelID) {
+        id = modelID;
+        cout << "Model constructor invoked, id = " << id << endl;
+    }
+};
+
+class Car : public Model {
+public:
+    // FIX: Explicitly call the base constructor with carID
+    Car(int carID) : Model(carID) {
+        cout << "Car constructor invoked, carID = " << carID << endl;
+    }
+};
+
+int main() {
+    Car *carB = new Car(3);   // ✔ Works now
+    return 0;
+}
+```
+
+---
+
+# 🧠 **Why this fixes the issue**
+
+### ✔ Base class (`Model`) has only:
+
+```cpp
+Model(int modelID);
+```
+
+### ❌ No default constructor exists:
+
+```cpp
+Model();   // NOT available
+```
+
+### When creating a `Car` object:
+
+C++ requires:
+
+1. Call `Model(...)` first
+2. Then call `Car(...)`
+
+Since no default `Model()` exists, this causes an error.
+
+---
+
+# ✔ The Fix
+
+Use a **member initializer list** so the `Car` constructor explicitly calls the correct `Model(int)` constructor:
+
+```cpp
+Car(int carID) : Model(carID)
+```
+
+This tells C++:
+
+> “Use `carID` and pass it to the parent constructor.”
+
+---
+
+# 📌 Interview Summary (copy-paste)
+
+* Base constructor is always called before the derived constructor.
+* If the base class has **no default constructor**, the derived class **must call** a specific base constructor.
+* Use **initializer list** to call the parent constructor:
+
+  ```cpp
+  Derived(args) : Base(args) {}
+  ```
+* Without this, the compiler tries to call `Base()`, and compilation fails.
+
+---
+
+If you want, I can also show you:
+
+✔ What happens when you add a default constructor
+✔ What happens when base has multiple constructors
+✔ How destructor order works in inheritance

@@ -1,0 +1,90 @@
+// Here is the **best interview-style explanation of “interface in C++”** — short, clean, and exactly what interviewers expect.
+
+// ---
+
+// # ⭐ **INTERVIEW ANSWER: What is an Interface in C++?**
+
+// > **“C++ does not have a keyword called `interface` like Java or C#.
+// > Instead, an interface is implemented using a class that contains only pure virtual functions.
+// > Such a class cannot be instantiated and only provides a contract of functions that derived classes must implement.
+// > This is known as an Abstract Base Class (ABC).”**
+
+// ---
+
+// # ✅ **Example of Interface in C++**
+
+// ```cpp
+#include <iostream>
+using namespace std;
+class IShape {
+public:
+    virtual void Draw() = 0;  // pure virtual → no implementation
+    virtual void Move() = 0;  // pure virtual
+};
+// ```
+
+// **Key points:**
+
+// * `= 0` → pure virtual method
+// * No object of `IShape` can be created
+// * Any class inheriting it **must implement all methods**
+
+// ---
+
+// # ✅ **Implementing the Interface**
+
+// ```cpp
+class Circle : public IShape {
+public:
+    void Draw() override {
+        cout << "Drawing Circle\n";
+    }
+    void Move() override {
+        cout << "Moving Circle\n";
+    }
+};
+// ```
+
+// ---
+
+// # 🔥 **Runtime Polymorphism with Interface**
+
+// ```cpp
+// IShape* shape = new Circle();
+// shape->Draw();  // Calls Circle's Draw
+// shape->Move();
+// ```
+
+// ---
+
+// # ⭐ **INTERVIEW-READY SUMMARY**
+
+// Memorize this:
+
+// > **“In C++, an interface is created using an abstract class that contains only pure virtual methods.
+// > It defines ‘what’ has to be done, not ‘how’ it is done.
+// > Derived classes provide the actual implementation.
+// > Interfaces help achieve abstraction, loose coupling, and runtime polymorphism.”**
+
+// ---
+
+// # 🧠 **Key Interview Points**
+
+// ✔ C++ interface = abstract class with pure virtual functions
+// ✔ No instantiation possible
+// ✔ Derived classes must override all pure virtual functions
+// ✔ Supports polymorphism
+// ✔ Promotes loose coupling and plug-and-play design
+
+
+
+
+❌ Mistake 1: You compiled the header file
+
+You ran:
+
+g++ -c Person.h -o person.o
+
+
+Never compile .h files.
+Header files do not produce object files.
