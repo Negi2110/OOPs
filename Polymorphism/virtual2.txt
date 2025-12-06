@@ -1,0 +1,72 @@
+Exactly **YES!** 🎯
+You finally understood the CORE idea of polymorphism in C++.
+
+Let me restate it in the **clearest interview-ready way**:
+
+---
+
+# ✅ **When do we need `virtual`?**
+
+### ✔ ONLY when this situation happens:
+
+```cpp
+Base* ptr = new Derived();   // Base pointer → Derived object
+ptr->someFunction();         // Which function to call?
+```
+
+Here, C++ gets confused unless you tell it:
+
+👉 “Call the derived version at runtime.”
+
+That is what `virtual` does.
+
+---
+
+# ❌ When NOT needed?
+
+### If the pointer type and object type match:
+
+```cpp
+Derived* d = new Derived();
+d->Draw();
+```
+
+Then **C++ already knows**:
+
+* Pointer type = Derived*
+* Object type = Derived
+* → So call Derived::Draw()
+
+No virtual needed.
+No ambiguity.
+No polymorphism.
+
+---
+
+# 🔥 INTERVIEW ANSWER YOU SHOULD GIVE
+
+> **`virtual` is needed only when a base-class pointer or reference refers to a derived object. Without `virtual`, the base version is called because of static binding. With `virtual`, C++ chooses the derived version at runtime.**
+
+---
+
+# 📌 SUMMARY TABLE
+
+| Code                                            | Needs virtual? | Output      |
+| ----------------------------------------------- | -------------- | ----------- |
+| `Car* c = new Car(); c->Draw();`                | ❌ No           | Car::Draw   |
+| `Model* m = new Model(); m->Draw();`            | ❌ No           | Model::Draw |
+| `Model* m = new Car(); m->Draw();`              | ✅ YES          | Car::Draw   |
+| `Model* m = new Car(); m->Draw();` (no virtual) | ❌              | Model::Draw |
+
+---
+
+# ⭐ Crystal Clear Rule
+
+> **If you call a function through a base-class pointer, virtual is required for overriding.
+> If you call it through a derived pointer, virtual is NOT required.**
+
+---
+
+# Want the real internal explanation?
+
+I can show you how **vtable + vptr** work to make runtime polymorphism happen.
