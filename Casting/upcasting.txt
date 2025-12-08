@@ -1,0 +1,121 @@
+Perfect — this slide is about **Upcasting**. I’ll explain it in the **same simple, interview-ready style** you like ✅
+
+---
+
+## ✅ What is Upcasting? (Simple Meaning)
+
+**Upcasting means:**
+
+> Converting a **derived class object or pointer** into a **base class pointer or reference**.
+
+Example idea:
+
+> A **Laptop *is a* Computer**, so it can be treated as a Computer.
+
+---
+
+## ✅ Key Rules of Upcasting
+
+* ✅ It is **ALWAYS safe**
+* ✅ It happens **automatically** (no cast needed)
+* ✅ It follows the **IS-A relationship**
+* ✅ Used heavily in **polymorphism**
+* ✅ If functions are `virtual`, **derived versions still run**
+
+---
+
+## ✅ Your Slide Example (Explained Clearly)
+
+```cpp
+class Computer {
+public:
+    virtual void Run() {
+        cout << "Computer Running\n";
+    }
+};
+
+class Laptop : public Computer {
+public:
+    void Run() override {
+        cout << "Laptop Running\n";
+    }
+};
+
+int main() {
+    Computer* computer = new Laptop();   // ✅ UPCASTING
+    computer->Run();                     // ✅ Calls Laptop::Run()
+}
+```
+
+### ✅ What happened here?
+
+* `new Laptop()` → creates a **derived object**
+* `Computer* computer` → base class pointer
+* Assigning derived to base → ✅ **Upcasting**
+* Because `Run()` is `virtual` → ✅ **Laptop::Run() runs**
+
+---
+
+## ✅ Why Upcasting Is Needed
+
+We use upcasting to:
+
+* ✅ Write **generic code**
+* ✅ Store different derived objects in **one container**
+* ✅ Achieve **runtime polymorphism**
+* ✅ Reduce **tight coupling**
+
+Example:
+
+```cpp
+vector<Computer*> devices;
+devices.push_back(new Laptop());
+devices.push_back(new Desktop());
+```
+
+---
+
+## ✅ One-Line Interview Finisher
+
+> “Upcasting is the automatic conversion of a derived class pointer or reference into a base class pointer or reference, used to enable runtime polymorphism.”
+
+
+
+
+### ✅ Final Rule in Lines
+
+* When you **upcast a derived object to a base pointer/reference**,
+  you **lose access to all functions that exist only in the derived class**.
+* You can **access only the functions declared in the base class interface**.
+* If those functions are `virtual`, the **derived implementation will still execute at runtime**.
+* Derived-only functions are **NOT accessible until you downcast back to the derived type**.
+
+---
+
+### ✅ Small Example
+
+```cpp
+class Computer {
+public:
+    virtual void Run() { }
+};
+
+class Laptop : public Computer {
+public:
+    void Run() override { }
+    void OpenLid() { }   // Derived-only function
+};
+
+int main() {
+    Computer* c = new Laptop();   // ✅ Upcasting
+
+    c->Run();      // ✅ Allowed (in base)
+    // c->OpenLid();  ❌ Not allowed (only in Laptop)
+}
+```
+
+---
+
+### 🔥 One-Line Interview Finisher
+
+> “After upcasting, only base-class interface functions are accessible, even though the actual object is still derived.”

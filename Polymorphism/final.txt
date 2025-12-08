@@ -143,3 +143,92 @@ class Test : public Immutable { };   // ❌ COMPILER ERROR
 // * `virtual` → opens the door
 // * `override` → checks correctness
 // * `final` → locks the door ✅
+
+
+
+// ✅ **Yes — you *can* use the `final` keyword in child (derived) classes**, and it’s actually a **very common and useful practice**.
+// Here’s the **clear breakdown**:
+
+// ---
+
+// ## ✅ 1. Using `final` on a Function in a Child Class
+
+// This means:
+
+// > “This derived class **overrides the function**, and **no further class is allowed to override it again**.”
+
+// ### ✅ Example
+
+// ```cpp
+// class Base {
+// public:
+//     virtual void show() {
+//         cout << "Base show\n";
+//     }
+// };
+
+// class Derived : public Base {
+// public:
+//     void show() final {   // ✅ Allowed: stops further overriding
+//         cout << "Derived show\n";
+//     }
+// };
+
+// class Child : public Derived {
+// public:
+//     // void show() override { }   // ❌ COMPILER ERROR (because show is final in Derived)
+// };
+// ```
+
+// ### ✅ Meaning in One Line
+
+// > A child class can mark an overridden function as `final` to **block any further overrides down the inheritance chain**.
+
+// ---
+
+// ## ✅ 2. Using `final` on a Child Class Itself
+
+// This means:
+
+// > “This class can inherit from others, but **no one can inherit from this class**.”
+
+// ### ✅ Example
+
+// ```cpp
+// class Animal {
+// public:
+//     virtual void sound() {}
+// };
+
+// class Dog final : public Animal {   // ✅ Dog is final
+// public:
+//     void sound() override {}
+// };
+
+// // class Husky : public Dog {};   // ❌ COMPILER ERROR (Dog is final)
+// ```
+
+// ---
+
+// ## ✅ 3. What You *Cannot* Do with `final`
+
+// | Case                                   | Allowed?      |
+// | -------------------------------------- | ------------- |
+// | `final` on non-virtual function        | ❌ Not allowed |
+// | `final` on overridden virtual function | ✅ Allowed     |
+// | `final` on base class                  | ✅ Allowed     |
+// | `final` on derived class               | ✅ Allowed     |
+// | Override a `final` function            | ❌ Not allowed |
+
+// ---
+
+// ## 🔥 One-Line Interview Finisher
+
+// > “Yes, `final` can be used in child classes to prevent further overriding of a function or to stop further inheritance of the class itself.”
+
+// ---
+
+// If you want, I can also explain:
+// ✅ `final` vs `const` (very common confusion)
+// ✅ How `final` helps remove vtable overhead
+// ✅ `final + override` used together in real projects
