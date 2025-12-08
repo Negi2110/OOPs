@@ -1,0 +1,103 @@
+
+## ✅ What “Base Class Access” Means
+
+* A **child class can access the functions of its parent (base) class**.
+* Even if the child **overrides** a function, it can still call the **base version**.
+* To do that, we use this syntax:
+
+> **`BaseClassName::FunctionName()`**
+
+This is called the **scope resolution operator**.
+
+---
+
+## ✅ Your Slide Example Explained
+
+```cpp
+class Model {
+public:
+    virtual void Draw() {
+        cout << "Draw Model\n";
+    }
+};
+```
+
+✅ `Model` is the **base class**
+✅ `Draw()` is a **virtual function**
+
+---
+
+```cpp
+class Car : public Model {
+public:
+    void Draw() {
+        Model::Draw();     // ✅ Call BASE class function explicitly
+        cout << "Draw Car\n";
+    }
+};
+```
+
+✅ `Car` **overrides** `Draw()`
+✅ Inside `Car::Draw()`, this line:
+
+```cpp
+Model::Draw();
+```
+
+means:
+
+> “Call the **base class version**, not the overridden one.”
+
+---
+
+## ✅ What Happens at Runtime?
+
+```cpp
+Model* obj = new Car();
+obj->Draw();
+```
+
+Output will be:
+
+```
+Draw Model
+Draw Car
+```
+
+Because:
+
+1. `obj->Draw()` → calls `Car::Draw()` (runtime polymorphism)
+2. Inside `Car::Draw()` → `Model::Draw()` is called manually
+3. Then `"Draw Car"` is printed
+
+---
+
+## ✅ Why This Is Useful (Interview Point)
+
+We use this when:
+
+* We want to **extend base behavior**, not replace it
+* Base does **common work**
+* Derived adds **extra behavior**
+
+This is called:
+
+> ✅ **“Calling the base implementation from the overridden function.”**
+
+---
+
+## ✅ One-Line Interview Finisher
+
+> “Even after overriding a function, a derived class can explicitly call the base class version using `BaseClassName::FunctionName()`.”
+
+---
+
+
+add on:
+BUT override:
+
+✅ Adds a compile-time safety check
+
+✅ Prevents silent bugs
+
+✅ Catches typos and wrong parameters immediately

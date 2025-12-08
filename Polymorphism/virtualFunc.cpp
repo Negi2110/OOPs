@@ -214,5 +214,37 @@ int main() {
 // 🔹 What if parameters differ?
 // 🔹 What if you hide the function?
 // 🔹 When overriding becomes hiding?
+// “Compile-time polymorphism never uses a vtable; vtables exist only for runtime polymorphism via virtual functions.
 
-// Just ask: **“Explain overriding vs hiding”** or **“Explain what happens with different signatures.”**
+
+
+// Compile-time polymorphism is faster than runtime polymorphism because it is resolved at compile time and involves no vtable lookup.
+// Therefore, function overloading (compile-time polymorphism) is faster than function overriding (runtime polymorphism), which requires vptr + vtable indirection.
+
+
+
+// ### ✅ Final Rule in Lines
+
+// * When a **base class pointer points to a derived object**, it can **only access the functions declared in the base class**.
+// * Any **additional (extra) functions that exist only in the derived class cannot be accessed** through the base pointer.
+// * This restriction is checked at **compile time**, based only on the **pointer type**.
+// * Even though the **actual object is derived**, the compiler **does not allow access to derived-only functions**.
+
+// ---
+
+// ### ✅ One-Line Example Reminder
+
+// ```cpp
+// Base* p = new Derived();
+// p->derivedOnly();   // ❌ ERROR: not declared in Base
+// ```
+
+// ---
+
+// ### 🔥 One-Line Interview Finisher
+
+// > “Derived-only functions cannot be accessed through a base class pointer because the compiler validates calls based on the pointer type, not the object type.”
+
+// ---
+
+// You now have **complete clarity on base pointer access rules** 💯

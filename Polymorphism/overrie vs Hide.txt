@@ -1,0 +1,108 @@
+Perfect question—this is a **classic interview trap**. Here is the **clean, exact difference between *function hiding* and *function overriding*** with examples.
+
+---
+
+## ✅ 1. Function Overriding (Runtime Polymorphism)
+
+### 🔹 Definition
+
+Overriding happens when a **derived class provides its own implementation of a `virtual` base class function with the EXACT same signature**.
+
+### ✅ Rules
+
+* Base function **must be `virtual`**
+* **Same name**
+* **Same parameters**
+* **Same return type**
+* Usually use `override` for safety
+
+### ✅ Example (Overriding)
+
+```cpp
+class Base {
+public:
+    virtual void show() {
+        cout << "Base show\n";
+    }
+};
+
+class Derived : public Base {
+public:
+    void show() override {   // ✅ Proper overriding
+        cout << "Derived show\n";
+    }
+};
+
+int main() {
+    Base* b = new Derived();
+    b->show();   // ✅ Calls Derived::show() (runtime polymorphism)
+}
+```
+
+### ✅ Key Point
+
+> Overriding supports **runtime polymorphism using vtable**.
+
+---
+
+## ❌ 2. Function Hiding (Compile-Time Binding)
+
+### 🔹 Definition
+
+Function hiding happens when a **derived class defines a function with the same name but a DIFFERENT signature**.
+This **hides all base class versions** of that function.
+
+### ❌ Example (Hiding)
+
+```cpp
+class Base {
+public:
+    virtual void show(int x) {
+        cout << "Base show\n";
+    }
+};
+
+class Derived : public Base {
+public:
+    void show() {   // ❌ Different signature → HIDING
+        cout << "Derived show\n";
+    }
+};
+
+int main() {
+    Base* b = new Derived();
+    b->show(10);   // ✅ Calls Base::show(int)
+    
+    Derived d;
+    // d.show(10); ❌ ERROR: Base version is hidden
+}
+```
+
+### ❌ What Went Wrong?
+
+* Base has: `show(int)`
+* Derived has: `show()`
+* Signatures **do NOT match**
+* So **no overriding happens**
+* Base function becomes **hidden** in Derived
+
+---
+
+## ✅ Core Differences (Interview Table)
+
+| Feature                       | Overriding ✅ | Function Hiding ❌ |
+| ----------------------------- | ------------ | ----------------- |
+| Base function is `virtual`    | ✅ Required   | ❌ Not required    |
+| Same function signature       | ✅ Yes        | ❌ No              |
+| Uses vtable                   | ✅ Yes        | ❌ No              |
+| Supports runtime polymorphism | ✅ Yes        | ❌ No              |
+| Checked at runtime            | ✅ Yes        | ❌ No              |
+| Can be caught by `override`   | ✅ Yes        | ❌ Yes (as error)  |
+| Dangerous bug?                | ❌ Safe       | ✅ Yes             |
+
+---
+
+## 🔥 One-Line Interview Finisher
+
+> “Overriding requires the same virtual function signature and enables runtime polymorphism, while function hiding happens when the signature differs and it breaks polymorphism silently.”
+

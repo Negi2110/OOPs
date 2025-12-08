@@ -1,0 +1,197 @@
+Nice slide—this is explaining the **Virtual Function Table (vtable)** concept in C++. Let me break it down **simply and in interview-ready language**, line by line.
+
+---
+
+## 🔹 What is a Virtual Function Table (vtable)?
+
+A **vtable** is a **lookup table used for dynamic (runtime) polymorphism** in C++.
+It helps the program decide **which version of a virtual function to call at runtime** based on the actual object type—not the pointer type.
+
+---
+
+## ✅ 1. *“A late binding mechanism consisting of a lookup table.”*
+
+### ✔ Meaning:
+
+* **Late binding = runtime binding**
+* The function call is decided **at runtime**, not at compile time.
+* The **lookup table = vtable**
+
+👉 When you write:
+
+```cpp
+Base* obj = new Derived();
+obj->show();   // Decided at runtime
+```
+
+The compiler uses the **vtable to find the correct `show()` function**.
+
+---
+
+## ✅ 2. *“Each class that has virtual functions or is derived from a class that has them has a vtable.”*
+
+### ✔ Meaning:
+
+* If a class has **at least one virtual function**, it gets a vtable.
+* **All derived classes also get their own vtable**, even if they don’t add new virtual functions.
+
+Example:
+
+```cpp
+class A {
+public:
+    virtual void show();
+};
+
+class B : public A {
+public:
+    void show();  // overrides
+};
+```
+
+✅ Both **A and B have their own vtables**.
+
+---
+
+## ✅ 3. *“The vtable is a static array populated at compile time...”*
+
+### ✔ Meaning:
+
+* The vtable is:
+
+  * **Static** ✅ (one per class, not per object)
+  * **Created at compile time** ✅
+* It contains:
+
+  * **Function pointers** to virtual functions
+
+Example (conceptually):
+
+| vtable of A |
+| ----------- |
+| &A::show    |
+
+| vtable of B |
+| ----------- |
+| &B::show    |
+
+---
+
+## ✅ 4. *“The compiler also adds a hidden pointer to the base class...”*
+
+### ✔ Meaning:
+
+* Every object of a class with virtual functions contains:
+
+  * A **hidden pointer called `vptr`**
+* This `vptr`:
+
+  * Points to the **correct vtable**
+  * Is set **when the object is created**
+
+So when this runs:
+
+```cpp
+Base* obj = new Derived();
+```
+
+Memory looks like this:
+
+```
+obj
+ ├── vptr ───► vtable of Derived
+ ├── data members...
+```
+
+Then:
+
+```cpp
+obj->show();
+```
+
+Steps at runtime:
+
+1. Use `vptr`
+2. Jump to vtable
+3. Fetch correct function address
+4. Call `Derived::show()`
+
+✅ This is **runtime polymorphism**.
+
+---
+
+## 🔥 Most Important Interview Summary
+
+✅ **vtable** → Table of function pointers
+✅ **vptr** → Hidden pointer inside each object
+✅ **Used for** → Runtime polymorphism
+✅ **Created at** → Compile time
+✅ **Used at** → Runtime
+✅ **Without `virtual`** → No vtable, no runtime binding
+
+---
+
+## ❗ Key Interview Trap Question
+
+### ❓ What happens if `virtual` is removed?
+
+```cpp
+class Base {
+public:
+    void show();
+};
+
+class Derived : public Base {
+public:
+    void show();
+};
+
+Base* obj = new Derived();
+obj->show();  
+```
+
+✅ Output will be:
+
+```
+Base version
+```
+
+❌ Because:
+
+* No virtual function
+* No vtable
+* No runtime binding
+* Function call resolved at **compile time**
+
+Here is the **perfect 5-line interview answer for vtable** — crisp, technical, and impressive:
+
+> A **vtable (virtual table)** is a **compile-time created lookup table of function pointers** used to support **runtime polymorphism** in C++.
+> Any class with **at least one virtual function** gets a vtable, and each object stores a hidden **vptr** pointing to it.
+> At runtime, the **vptr is used to resolve the correct overridden function** based on the actual object type.
+> This enables **late binding (dynamic dispatch)** instead of compile-time binding.
+> Without `virtual`, **no vtable is created and function calls are resolved at compile time**.
+
+The vtable is used only for runtime polymorphism to decide which overridden virtual function to call at runtime.
+It is used when a base class pointer or reference points to a derived object.
+The call is resolved using the object’s vptr pointing to the correct vtable.
+Without virtual, all calls are resolved at compile time and no vtable is used.
+
+Calling a virtual function is slightly slower than a non-virtual function due to runtime lookup.
+First, the object’s vptr is used to locate the vtable.
+Then the correct function pointer is fetched and invoked.
+This extra indirection is the only performance cost of runtime polymorphism.
+
+
+Calling a virtual function means calling a function that is declared virtual through a base class pointer or reference at runtime.
+It does not matter whether the function is overridden or not—it is still a virtual call.
+Such calls use vptr + vtable, so they are slightly slower than normal calls.
+If the function is called using a direct object, the compiler usually resolves it at compile time, not using the vtable.
+
+And the one-line finisher:
+
+“A virtual call happens only when a virtual function is invoked through a base class pointer or reference at runtime.” ✅
+
+
+Any time a function call goes through the vtable, it introduces a small extra runtime overhead due to an extra level of indirection (vptr → vtable → function).
+
+A virtual function call means the function is dispatched via the vtable at runtime, not resolved at compile time.

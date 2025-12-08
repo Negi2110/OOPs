@@ -66,7 +66,44 @@ No polymorphism.
 > If you call it through a derived pointer, virtual is NOT required.**
 
 ---
+---
 
-# Want the real internal explanation?
+### ✅ Final Rule in Lines
 
-I can show you how **vtable + vptr** work to make runtime polymorphism happen.
+* A **base class pointer can access only those functions that are declared in the base class**.
+* Even if the object is of the derived class, **functions not present in the base class cannot be accessed**.
+* If the accessed function is **virtual and overridden**, the **derived version runs at runtime**.
+* If it is **not overridden**, the **base version runs**.
+
+---
+
+### ✅ Example
+
+```cpp
+class Base {
+public:
+    virtual void show() { cout << "Base show\n"; }
+    void baseOnly() { cout << "Base only\n"; }
+};
+
+class Derived : public Base {
+public:
+    void show() { cout << "Derived show\n"; }   // overridden
+    void derivedOnly() { cout << "Derived only\n"; }
+};
+
+int main() {
+    Base* b = new Derived();
+
+    b->show();       // ✅ Calls Derived::show() (runtime polymorphism)
+    b->baseOnly();  // ✅ Calls Base::baseOnly()
+    // b->derivedOnly();  ❌ Compile-time error (not in Base)
+}
+```
+
+---
+
+### 🔥 One-Line Interview Finisher
+
+> “A base class pointer can only access base class functions, but if those functions are virtual, the derived implementation is called at runtime.” ✅
+
