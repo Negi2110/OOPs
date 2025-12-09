@@ -1,0 +1,38 @@
+✅ What is a Friend Function? (Simple Meaning)
+
+Normally, private and protected members of a class:
+
+❌ Cannot be accessed from outside the class
+
+A friend function is:
+
+✅ A normal external function
+
+✅ That is granted special access to the class’s private and protected members
+
+It is declared using the keyword:
+
+friend
+
+✅ Key Properties (Interview Gold)
+
+✅ A friend function is NOT a class member
+
+✅ It can access:
+
+private members
+
+protected members
+
+✅ Friendship is:
+
+Not inherited
+
+Not symmetric
+
+Not transitive
+
+✅ General Syntax
+class ClassName {
+    friend returnType functionName(parameters);
+};
