@@ -1,0 +1,146 @@
+Perfect — this slide is about **Pointers to Member Functions**, which are **different from normal function pointers** and often confusing in interviews. Let me explain it **cleanly with rules + a working example** ✅
+
+---
+
+## ✅ 1. Why a Normal Function Pointer CANNOT Point to a Member Function
+
+```cpp
+void(*ptr)();    // normal function pointer
+```
+
+This can point only to:
+
+* ✅ Free functions
+* ✅ `static` member functions
+
+It **CANNOT** point to:
+
+* ❌ Non-static member functions
+
+### ❗ Why?
+
+Because a **non-static member function needs an object (`this` pointer)** to run.
+A normal function pointer has:
+
+* ❌ No object
+* ❌ No `this` pointer
+
+So this is **illegal**:
+
+```cpp
+class A {
+public:
+    void show() {}
+};
+
+void (*ptr)() = &A::show;   // ❌ ERROR
+```
+
+---
+
+## ✅ 2. What Makes a Member Function Type Different
+
+A member function type depends on **THREE things**:
+
+1. ✅ Return type
+2. ✅ Parameter list
+3. ✅ **The class it belongs to** ← this is the extra rule
+
+That’s why the slide says:
+
+> “The class to which the function belongs is also part of the function type.”
+
+---
+
+## ✅ 3. Correct Syntax for Pointer to Member Function
+
+```cpp
+type (ClassName::*pointerName)(parameters);
+```
+
+Example:
+
+```cpp
+void (A::*ptr)();
+```
+
+Meaning:
+
+> `ptr` is a pointer to a member function of class `A`
+> that returns `void` and takes no parameters
+
+---
+
+## ✅ 4. Full Working Example (Important)
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class A {
+public:
+    void show() {
+        cout << "Hello from A::show()" << endl;
+    }
+
+    int add(int x, int y) {
+        return x + y;
+    }
+};
+
+int main() {
+
+    // ✅ Pointer to member function: void A::()
+    void (A::*showPtr)() = &A::show;
+
+    // ✅ Pointer to member function: int A::(int, int)
+    int (A::*addPtr)(int, int) = &A::add;
+
+    A obj;
+
+    // ✅ Calling member function using object + pointer
+    (obj.*showPtr)();              // calls A::show()
+    cout << (obj.*addPtr)(10, 20); // calls A::add(10, 20)
+
+    return 0;
+}
+```
+
+---
+
+## ✅ 5. Calling Syntax (Very Important for Interviews)
+
+For a normal function pointer:
+
+```cpp
+ptr();
+```
+
+For a **member function pointer**:
+
+```cpp
+(obj.*ptr)();     // using object
+(ptrObj->*ptr)() // using pointer to object
+```
+
+---
+
+## ✅ 6. Static vs Non-Static Member Functions
+
+| Function Type              | Can Normal Function Pointer Point to It? |
+| -------------------------- | ---------------------------------------- |
+| Free function              | ✅ Yes                                    |
+| Static member function     | ✅ Yes                                    |
+| Non-static member function | ❌ No                                     |
+
+Because:
+
+* Static member functions do NOT need `this`
+* So they behave like normal functions
+
+---
+
+## 🔥 One-Line Interview Finisher
+
+> “A pointer to a member function must include the class type because non-static member functions require an object (`this` pointer) to be invoked.”
+

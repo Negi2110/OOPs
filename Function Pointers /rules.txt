@@ -1,0 +1,125 @@
+Perfect — this slide is explaining **how function pointers are ASSIGNED and CALLED**. Let me break it into **clean interview-ready steps with a small example** ✅
+
+---
+
+## ✅ Key Idea in Simple Words
+
+1. **A function pointer can store the address of any function that matches its type.**
+2. **While assigning, we store the function’s address — we do NOT call it.**
+3. **To call the function through the pointer, we use `()` with arguments.**
+
+---
+
+## ✅ Step-by-Step with Exact Meaning
+
+### ✅ 1. Declaring a Function
+
+```cpp
+int AddNumbers(int a, int b) {
+    return a + b;
+}
+```
+
+This function has the type:
+
+```
+int(int, int)
+```
+
+---
+
+### ✅ 2. Declaring a Function Pointer
+
+```cpp
+int (*ptr)(int, int);
+```
+
+Meaning:
+
+> `ptr` can store the address of **any function that returns `int` and takes two `int` parameters**.
+
+---
+
+### ✅ 3. Assigning the Function to the Pointer (NO CALL)
+
+```cpp
+ptr = AddNumbers;   // ✅ Address is assigned
+```
+
+🚨 Important:
+
+* `AddNumbers` → **address**
+* `AddNumbers()` → **function call**
+
+So here:
+
+> ✅ We are storing the **address**, NOT executing the function.
+
+---
+
+### ✅ 4. Calling the Function Using the Pointer
+
+```cpp
+int answer = ptr(5, 7);   // ✅ Function is actually executed here
+```
+
+This internally becomes:
+
+```cpp
+AddNumbers(5, 7);
+```
+
+---
+
+## ✅ Full Mini Program (All 3 Slide Points Together)
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int AddNumbers(int a, int b) {
+    return a + b;
+}
+
+int main() {
+
+    // ✅ 1. Declare function pointer
+    int (*ptr)(int, int);
+
+    // ✅ 2. Assign function address (NOT calling it)
+    ptr = AddNumbers;
+
+    // ✅ 3. Call function using pointer
+    int answer = ptr(5, 7);
+
+    cout << "Answer = " << answer << endl;  // Output: 12
+
+    return 0;
+}
+```
+
+---
+
+## ✅ What This Slide Is Testing in Interviews
+
+* ✅ Difference between **assignment vs invocation**
+* ✅ Understanding that:
+
+  * `FunctionName` → address
+  * `FunctionName()` → call
+* ✅ Type-matching rule for function pointers
+* ✅ Indirect function calls
+
+---
+
+## 🔥 One-Line Interview Finisher
+
+> “Assigning a function to a function pointer stores only its address, and the function is executed later using the pointer with the call operator `()`.”
+
+---
+
+If you want, I can next explain:
+✅ Member function pointers
+✅ `std::function` vs raw pointers in callbacks
+✅ Real embedded-system callback example
+✅ Tricky interview syntax questions on function pointers

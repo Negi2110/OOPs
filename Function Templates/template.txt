@@ -1,0 +1,123 @@
+## ✅ 1. What “Template Type Deduction” Means
+
+From the slide:
+
+> *If the compiler can determine the type of the parameters being passed, there is no need to explicitly specify it.*
+
+This means:
+
+✔ You **do NOT need to write** `GetMax<int>()` every time
+✔ The compiler **automatically figures out `T` from the arguments**
+
+---
+
+## ✅ 2. Example with Variables (From Slide)
+
+```cpp
+int a = 6, b = 9;
+cout << GetMax(a, b) << endl;
+```
+
+Here:
+
+* `a` is `int`
+* `b` is `int`
+* So the compiler deduces:
+
+```cpp
+T = int
+```
+
+Internally it becomes:
+
+```cpp
+GetMax<int>(a, b);
+```
+
+✅ This is called **implicit template instantiation**
+
+---
+
+## ✅ 3. Example with Literals (From Slide)
+
+```cpp
+cout << GetMax(14, 8) << endl;
+```
+
+Here:
+
+* `14` → `int`
+* `8` → `int`
+
+So again:
+
+```cpp
+T = int
+```
+
+✅ Even though you didn’t write `int`, the compiler still knows the type.
+
+---
+
+## ✅ 4. Why Mixed Types Cause an Error
+
+From the slide:
+
+> *Mixing the parameter types will cause a compiler error as only one type has been included within the function.*
+
+Consider this:
+
+```cpp
+GetMax(10, 2.5);   // ❌ ERROR
+```
+
+Now the compiler sees:
+
+* First argument → `int`
+* Second argument → `double`
+
+So it gets confused:
+
+```cpp
+T = int ?  
+T = double ?
+```
+
+It **cannot choose ONE single type for `T`**, so:
+
+❌ **Compilation fails**
+
+---
+
+## ✅ 5. How to FIX Mixed Types (Important Interview Trick)
+
+### ✅ Option 1: Explicitly Specify the Type
+
+```cpp
+GetMax<double>(10, 2.5);  // ✅ Both become double
+```
+
+### ✅ Option 2: Cast One Argument
+
+```cpp
+GetMax(10.0, 2.5);  // ✅ Now both are double
+```
+
+---
+
+## ✅ 6. Final Rules in Short Lines (Interview Ready)
+
+* ✅ If both arguments have the **same type**, the compiler **auto-deduces `T`**
+* ✅ You don’t need to write `<int>`, `<float>`, etc.
+* ❌ If arguments have **different types**, the compiler **throws an error**
+* ✅ You must then:
+
+  * Explicitly specify the type
+  * Or cast one argument
+
+---
+
+## 🔥 One-Line Interview Finisher
+
+> “Template type deduction allows the compiler to infer the template type from function arguments automatically, but all parameters must match the same type, otherwise compilation fails.”
+
