@@ -1,0 +1,167 @@
+**Exceptions (explained in one clear paragraph):**
+Exceptions are a structured way of handling runtime anomalies such as invalid input, divide-by-zero errors, or running out of memory without crashing the program abruptly. 
+They help separate **error-detection code** from **error-handling code**, which makes programs cleaner, more readable, and easier to maintain. 
+Using the exception mechanism, a programmer can **define custom exceptions**, **create (instantiate) exceptions when an error occurs**, and **use special blocks like `try`, `catch`, and `throw` to detect and handle errors safely**. 
+This approach improves program reliability by ensuring that unexpected problems are handled in a controlled and organized manner instead of relying on error codes or abrupt termination.
+
+
+
+**Exception Handling (explained in one clear paragraph):**
+Exception handling is a mechanism used to manage runtime errors in a controlled and structured way using the `try`, `catch`, and `throw` keywords. The code that may generate an error is placed inside a **`try` block**, and if an exception occurs within this block, the normal flow of execution is stopped and control is transferred to the appropriate **`catch` block**, which acts as the exception handler.
+If no exception is thrown, the catch block is skipped entirely. The **`catch` block must be written immediately after the `try` block**, and it defines how a particular type of exception should be handled.
+Exceptions can be **explicitly generated using the `throw` keyword**, allowing the programmer to signal that an abnormal condition has occurred. This structured approach improves program safety, prevents abrupt crashes, and keeps error-handling logic separate from normal program logic.
+
+**Catch-all Exception Handling (explained in one clear paragraph):**
+In C++, using three dots `(...)` inside the `catch` block creates a **catch-all exception handler**, which means it can catch **any type of exception**, regardless of its data type.
+This is useful when the exact type of exception is unknown or when you want to ensure that no exception escapes unhandled. The structure is written as `try { /* risky code */ } catch(...) { /* error handling */ }`. 
+If an exception is thrown inside the `try` block and **no matching `catch` handler is found**, the program automatically transfers control to the **`std::terminate()` function**, which leads to abnormal program termination. Therefore, using `catch(...)` acts as a safety net to prevent unexpected program crashes and ensures graceful error handling when specific exception types are not handled.
+
+
+
+**Function Try Block (explained in one clear paragraph):**
+A **function try block** in C++ allows the entire body of a function to be enclosed within a `try` block instead of placing `try` inside the function body. In this structure, the `try` keyword appears immediately after the function signature, and all statements of the function are treated as part of the protected code. 
+Any exception thrown inside the function automatically transfers control to the corresponding `catch` block written right after the function. This is especially useful for **handling exceptions thrown during object construction, resource initialization, or within constructors**, where normal `try` blocks cannot be placed before initialization. 
+It improves centralized error handling for the whole function and makes exception management cleaner and more structured.
+
+
+
+**Throwing Exceptions (explained in one clear paragraph):**
+In C++, an exception is generated using the **`throw` keyword**, which sends an error object or value to the nearest matching exception handler. The `throw` statement accepts **only one parameter**, and this parameter is passed directly to the corresponding `catch` block for processing. 
+Exceptions can be thrown using **literal values** such as `throw 10;`, or using **user-defined types** like `throw ClassName();`, where the class constructor is automatically invoked. Alternatively, an object of a user-defined class can be created first and then thrown using `throw obj;`. 
+This mechanism allows rich and descriptive error information to be passed to the handler, enabling precise and structured error handling in modern C++ programs.
+
+
+
+
+
+`throw ClassName();` means **you are throwing a temporary object of a user-defined class as an exception**.
+
+### What exactly happens:
+
+1. `ClassName()` calls the **default constructor** of `ClassName`.
+2. A **temporary object** is created.
+3. That object is **passed to the matching `catch(ClassName)` handler**.
+4. Normal program flow stops and moves to the `catch` block.
+
+### Simple Example:
+
+#include <iostream>
+using namespace std;
+
+class MyError {
+public:
+    MyError() {
+        cout << "Exception object created\n";
+    }
+};
+
+int main() {
+    try {
+        throw MyError();   // ✅ Creates and throws an object
+    }
+    catch (MyError e) {
+        cout << "Exception caught\n";
+    }
+}
+```
+
+### Output:
+
+Exception object created
+Exception caught
+```
+
+### Key Meaning in One Line (for interview):
+
+> `throw ClassName();` creates a temporary object of that class using its constructor and throws it as an exception.
+
+
+**Difference in one short paragraph:**
+`throw ClassName();` throws a **temporary object** created on the spot using the class constructor, while `ClassName obj; throw obj;` first creates a **named object** and then throws that same object. 
+Functionally, both result in an exception of type `ClassName` being sent to the `catch` block, but the second approach allows you to **modify the object’s data before throwing it** (for example, setting an error message or code).
+ In modern C++, both are commonly used, but `throw ClassName();` is preferred when no extra customization of the object is needed before throwing.
+
+
+
+
+**Chained Exception Handlers (explained in one clear paragraph):**
+In C++, each **`catch` handler can accept only one exception type**, and when an exception is thrown, the runtime searches for a **matching `catch` block** based on the type of the thrown object. Multiple `catch` blocks can be **chained after a single `try` block**, each with a different parameter type, similar to how function overloading works. 
+The **first handler with a compatible type is executed**, and the remaining handlers are skipped. A final `catch(...)` can be added as a **generic fallback** to catch any exception that was not matched by the typed handlers. This mechanism allows precise, type-safe, and organized error handling in complex C++ programs.
+Here is a **clean, interview-ready C++ example** that clearly shows **chained `catch` blocks working like overloading**:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    try {
+        int choice = 2;
+
+        if (choice == 1)
+            throw 10;                 // int exception
+        else if (choice == 2)
+            throw 3.14;               // double exception
+        else
+            throw "Unknown Error";    // const char* exception
+    }
+    catch (int e) {                   // ✅ Handles int
+        cout << "Integer Exception Caught: " << e << endl;
+    }
+    catch (double e) {                // ✅ Handles double
+        cout << "Double Exception Caught: " << e << endl;
+    }
+    catch (const char* msg) {         // ✅ Handles string literal
+        cout << "String Exception Caught: " << msg << endl;
+    }
+    catch (...) {                     // ✅ Catches anything else
+        cout << "Unknown Exception Caught" << endl;
+    }
+
+    return 0;
+}
+```
+
+### ✅ Output (when `choice = 2`):
+
+```
+Double Exception Caught: 3.14
+```
+
+---
+
+### ✅ What this example proves:
+
+* Only **one type per `catch`**
+* Handlers are checked **top to bottom**
+* Only the **matching one runs**
+* `catch(...)` is a **fallback safety net**
+* Behavior is **similar to function overloading by type**
+
+---
+
+### ✅ One-line interview answer:
+
+> “Multiple `catch` blocks act like overloaded functions where the handler with the matching exception type is executed.”
+
+
+
+**Exception Specification (explained clearly in one paragraph):**
+Exception specification is an older C++ mechanism used to **declare what types of exceptions a function is allowed to throw** directly in its function declaration, such as `void func() throw(int, double);`, which means the function can throw only `int` or `double` exceptions. 
+If a function is declared as `void func() throw();`, it means the function **should not throw any exception**, and if it still throws one at runtime, the program may terminate abnormally. 
+If the `throw` keyword is **omitted completely**, the function is allowed to throw **any type of exception**. Writing `throw(...)` also means the function may throw **any exception**. 
+However, an important point is that **the compiler does NOT strictly enforce these rules at compile time**, and because of their limitations and unsafe behavior, **dynamic exception specifications (`throw(...)`) are deprecated and removed in modern C++**, replaced by the safer `noexcept` keyword.
+
+---
+
+### ✅ Modern Replacement (Important for Interview):
+
+```cpp
+void func() noexcept;      // Guaranteed NOT to throw exception
+void func() noexcept(false); // May throw exception
+```
+
+---
+
+### ✅ One-Line Interview Answer:
+
+> Exception specification limits what exceptions a function can throw, but it is deprecated in modern C++ and replaced by `noexcept`.
