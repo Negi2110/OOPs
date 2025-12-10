@@ -1,0 +1,133 @@
+Excellent — this slide is explaining a **very important rule about defining member functions of a *class template outside the class***. This is a **common interview trap**, so I’ll explain it clearly with a correct example ✅
+
+---
+
+## ✅ 1. Key Rule from the Slide (In Simple Words)
+
+> If a **member function of a class template is defined outside the class**, then:
+
+* You **must repeat the `template <class T>` line**
+* You **must use `ClassName<T>::`** before the function name
+
+---
+
+## ✅ 2. Why This Is Required
+
+Because:
+
+* `T` is **not a real type** (it’s a template placeholder)
+* Outside the class, the compiler **does not remember `T`**
+* So you must **reintroduce the template parameter**
+
+---
+
+## ✅ 3. Correct General Syntax (From Your Slide)
+
+```cpp
+template <class T>
+ReturnType ClassName<T>::FunctionName() {
+}
+```
+
+⚠ Even if the function does **NOT use `T` inside**, you still **must write `<T>`**.
+
+---
+
+## ✅ 4. Full Correct Example (Constructor + Function Defined Outside)
+
+```cpp
+#include <iostream>
+using namespace std;
+
+/*
+====================================================
+CLASS TEMPLATE DECLARATION
+====================================================
+*/
+
+template <class T>
+class MyClass {
+public:
+    MyClass(T x);     // ✅ Constructor declaration
+    void show();      // ✅ Function declaration
+private:
+    T value;
+};
+
+
+/*
+====================================================
+MEMBER FUNCTION DEFINITIONS OUTSIDE THE CLASS
+====================================================
+IMPORTANT RULE:
+- template<class T> MUST be repeated
+- MyClass<T>:: MUST be used
+*/
+
+template <class T>
+MyClass<T>::MyClass(T x) {     // ✅ Constructor has NO return type
+    value = x;
+}
+
+template <class T>
+void MyClass<T>::show() {     // ✅ Must still use <T>
+    cout << "Value = " << value << endl;
+}
+
+
+/*
+====================================================
+MAIN FUNCTION
+====================================================
+*/
+
+int main() {
+
+    MyClass<int> obj(10);   // ✅ T = int
+    obj.show();            // ✅ Calls show() for MyClass<int>
+
+    return 0;
+}
+```
+
+---
+
+## ✅ 5. Important Points Directly From Your Slide
+
+* ✅ If a member function is **not inline**, you must write:
+
+  ```cpp
+  template <class T>
+  ```
+* ✅ The `T` after `ClassName<T>::` means:
+
+  > This function belongs to the **template version of the class**
+* ✅ **All member functions must use `ClassName<T>::`**
+  even if the function does **not use `T` inside**
+* ✅ Constructors:
+
+  * ✅ Still use `MyClass<T>::MyClass(...)`
+  * ✅ Do **NOT** have a return type
+
+---
+
+## ❌ Common Wrong Mistakes (Very Important)
+
+```cpp
+void MyClass::show() { }       // ❌ WRONG (missing <T>)
+MyClass<T>::MyClass(T x) { }  // ❌ WRONG (missing template line)
+```
+
+---
+
+## 🔥 One-Line Interview Finisher
+
+> “When defining member functions of a class template outside the class, we must repeat `template<class T>` and use `ClassName<T>::FunctionName`, even if the function does not directly use `T`.”
+
+---
+
+If you want, I can next explain:
+✅ Why **class templates cannot be compiled like normal `.cpp` files**
+✅ Why template implementations must stay in headers
+✅ The linker errors you get if you separate them incorrectly
+✅ A real interview trick question on this topic

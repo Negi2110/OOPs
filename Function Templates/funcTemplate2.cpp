@@ -56,10 +56,6 @@ int main() {
 
     return 0;
 }
-// ```
-
-// ---
-
 // ## ✅ What This Example Demonstrates (Interview Gold)
 
 // * ✅ **Multiple template types**:

@@ -1,0 +1,167 @@
+✅ This slide is **100% correct** and it points to a **very important C++ template rule** that is often asked in interviews. Let me explain **why this happens, what the linker error really means, and how to fix it**—in clear, simple language.
+
+---
+
+## ✅ Final Rule (Short & True)
+
+> **All template class and template function definitions must be visible at compile time**, so they are usually placed **entirely in header files (`.h`)**.
+> If you move template definitions to a `.cpp` file, you will get **linker errors**.
+
+---
+
+## ✅ Why This Rule Exists (Core Concept)
+
+### 🔹 Normal C++ Functions
+
+For normal functions:
+
+* `.h` → declaration
+* `.cpp` → definition
+* The compiler generates code once
+* The linker connects everything ✅
+
+### 🔹 Template Functions & Template Classes
+
+Templates work **differently**:
+
+> ✅ Templates are **NOT real code until they are USED**
+> ✅ The compiler creates real functions/classes **only when it sees a specific type**
+
+Example:
+
+```cpp
+Vector2D<int> v;
+```
+
+Only at this line does the compiler generate:
+
+```cpp
+class Vector2D<int> { ... };
+```
+
+So the compiler **must see the full template definition at the point of use**.
+If it only sees:
+
+```cpp
+template<class T>
+class Vector2D;
+```
+
+…but not the full function bodies → it **cannot generate code** ❌
+
+That’s why:
+
+> ✅ Template implementation must be in the header
+
+---
+
+## ❌ What Goes Wrong If You Put Template Code in `.cpp`
+
+If you do this:
+
+✅ `Vector2D.h`
+
+```cpp
+template<class T>
+class Vector2D {
+public:
+    Vector2D(T x, T y);
+    void Display();
+};
+```
+
+❌ `Vector2D.cpp`
+
+```cpp
+template<class T>
+Vector2D<T>::Vector2D(T x, T y) { ... }
+```
+
+❌ `main.cpp`
+
+```cpp
+Vector2D<int> v(3,4);
+```
+
+### 🔥 Result:
+
+You get a **LINKER ERROR** like:
+
+```
+undefined reference to Vector2D<int>::Vector2D(int, int)
+```
+
+Because:
+
+* The compiler **never saw the full definition**
+* So it never generated the `Vector2D<int>` code
+
+---
+
+## ✅ Correct & Safe Way (What Professionals Do)
+
+✅ Put everything in **one header file**:
+
+```cpp
+// Vector2D.h
+template<class T>
+class Vector2D {
+public:
+    Vector2D(T x, T y) {
+        coordinate[0] = x;
+        coordinate[1] = y;
+    }
+
+    void Display() {
+        cout << coordinate[0] << ", " << coordinate[1] << endl;
+    }
+
+private:
+    T coordinate[2];
+};
+```
+
+Then:
+
+```cpp
+#include "Vector2D.h"
+```
+
+✅ This always works
+✅ No linker errors
+✅ Compiler sees everything
+✅ Code is generated correctly
+
+---
+
+## ✅ Advanced Fix (Interview Bonus)
+
+There **is** a way to split templates into `.cpp`, but it requires:
+
+```cpp
+template class Vector2D<int>;
+```
+
+This is called:
+
+> ✅ **Explicit template instantiation**
+
+But it is:
+
+* Rare
+* Error-prone
+* Used only in special libraries
+
+---
+
+## 🔥 One-Line Interview Finisher
+
+> “Templates must be fully defined in header files because the compiler generates code only when a specific template type is instantiated, and without the full definition at that point, the linker fails.”
+
+---
+
+If you want, I can also explain:
+✅ What **explicit template instantiation** looks like
+✅ Why STL is completely header-only
+✅ The exact difference between **compiler error vs linker error**
+✅ A real interview debug scenario based on this rule
