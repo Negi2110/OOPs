@@ -1,0 +1,102 @@
+Here is the **explanation of the slide in clear, simple, interview-ready language**, plus a **tiny example showing how NDEBUG disables assertions**.
+
+---
+
+# ✅ **Assertions — Turning Them Off Using `NDEBUG`**
+
+Assertions (`assert(condition)`) are meant **only for debugging**, not for production.
+C++ provides a mechanism to **disable all assertions** in the program using:
+
+```cpp
+#define NDEBUG
+```
+
+This macro must appear **before** including `<cassert>` (or `<assert.h>`).
+
+### ✔ When `NDEBUG` is defined:
+
+* All `assert()` checks are **removed by the compiler**.
+* No condition is checked at runtime.
+* The program **never stops**, even if assertions fail.
+
+### ✔ When `NDEBUG` is *not* defined:
+
+* `assert()` statements are active.
+* Failed assertions print an error message and terminate the program.
+
+This allows developers to have **strict error checking in debug builds**, while **removing runtime overhead** in release builds.
+
+---
+
+# 🧪 **Example Showing How Assertions Are Disabled**
+
+### ✅ Debug Build (Assertions ON)
+
+```cpp
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+int main() {
+    int x = -5;
+    assert(x > 0);  // ❌ This will FAIL in debug mode
+    cout << "Program continues…" << endl;
+}
+```
+
+### Output:
+
+```
+Assertion failed: x > 0, file main.cpp, line 6
+```
+
+---
+
+### 🚀 Release Build (Assertions OFF)
+
+```cpp
+#define NDEBUG     // Disable all assert() checks
+#include <iostream>
+#include <cassert>
+using namespace std;
+
+int main() {
+    int x = -5;
+    assert(x > 0);  // ❌ This line does NOTHING now
+    cout << "Program continues…" << endl; // Program runs normally
+}
+```
+
+### Output:
+
+```
+Program continues…
+```
+
+---
+
+# 🎯 **Typical Uses of Assertions**
+
+Assertions are used for **internal sanity checks**, such as:
+
+* validating parameters inside functions:
+
+  ```cpp
+  assert(size > 0);
+  ```
+* verifying array bounds (in debug mode)
+* checking invariants in classes
+* ensuring preconditions/postconditions in algorithms
+
+---
+
+# 📝 **One-Line Interview Answer**
+
+> “Assertions automatically terminate the program when a condition fails, and defining `NDEBUG` disables all assertions for release builds.”
+
+---
+
+If you want, I can also explain:
+✅ `assert()` vs `static_assert()` (compile-time vs runtime)
+✅ Why assertions must not be used for user input validation
+✅ How professional simulation and game engines use assertions for debugging
