@@ -1,0 +1,49 @@
+Multitasking refers to a system’s ability to perform multiple operations at the same time, and it comes in two forms: **process-based multitasking**, where the operating system runs two or more independent programs concurrently, and **thread-based multitasking**, where different parts of the same program execute simultaneously through multiple threads.
+Every process contains at least one thread, and programs that use more than one thread can handle multiple tasks in parallel, improving responsiveness and efficiency.
+However, true hardware-level concurrency—where multiple instructions execute at the exact same time—occurs only on systems with multiple CPUs or multi-core processors; otherwise, the operating system rapidly switches between tasks to create the illusion of parallelism.
+
+
+Multitasking offers the major advantage of efficiently using CPU idle time, which often occurs when the processor is waiting for slower I/O operations like network communication, disk access, or keyboard input.
+Instead of sitting idle during these delays, the CPU can switch to other tasks and continue productive work. 
+For example, in a network game server, while the server waits for new players to connect—a process that depends heavily on network I/O—it can simultaneously process data from already connected players, update game logic, and manage the game cycle. This ability to overlap tasks dramatically improves overall performance and system responsiveness.
+
+
+Before C++11, the language did not include built-in multithreading features like C# or Java, so developers had to rely on operating-system–specific APIs to create and manage threads.
+Different operating systems provided different levels of threading support; for example, Windows offered a rich set of low-level thread management functions through the <windows.h> API, allowing very fine-grained control over thread creation, scheduling, and synchronization. 
+C++ programs could call these OS APIs directly to access native concurrency features. With this approach, C++ applications were able to take full advantage of the operating system’s threading capabilities, often achieving high performance and efficient multitasking thanks to hardware and OS-level optimizations.
+
+
+
+# ✅ **Thread Functions — Explanation (One Paragraph)**
+
+Windows allows you to control the execution of threads using two system functions: `SuspendThread()` and `ResumeThread()`. 
+Calling `SuspendThread(handle)` pauses the specified thread, freezing its execution at the exact point where it is running. 
+The thread remains suspended until `ResumeThread(handle)` is called, which allows it to continue execution from where it left off. 
+These functions require a valid thread handle returned by `CreateThread()`.
+While powerful, suspend/resume operations must be used carefully because suspending a thread at the wrong moment—for example, while it holds a lock—can cause deadlocks or inconsistent program state.
+Modern C++ typically avoids these functions in favor of safer synchronization mechanisms, but they remain useful for low-level OS-controlled threading.
+
+
+
+In multithreaded applications, you may need to prioritize certain threads so they receive more CPU time than others, especially when time-critical tasks must run faster. 
+Windows allows you to adjust a thread’s scheduling priority using the `SetPriorityClass()` function, which assigns a priority level to a thread based on predefined constants. 
+Higher priority values, such as `THREAD_PRIORITY_TIME_CRITICAL` (15) or `THREAD_PRIORITY_HIGHEST` (2), cause the operating system to schedule those threads more frequently, while lower values like `THREAD_PRIORITY_LOWEST` (–2) or `THREAD_PRIORITY_IDLE` (–15) make those threads run less often, typically only when the CPU is otherwise idle.
+The default priority level is `THREAD_PRIORITY_NORMAL` (0). Properly assigning priorities can improve performance in real-time systems, game loops, or data-processing pipelines, but using extreme values must be done carefully to avoid starving lower-priority threads.
+
++----------------------------------+-------+
+| Thread Priority                  | Value |
++----------------------------------+-------+
+| THREAD_PRIORITY_TIME_CRITICAL    |   15  |
+| THREAD_PRIORITY_HIGHEST          |    2  |
+| THREAD_PRIORITY_ABOVE_NORMAL     |    1  |
+| THREAD_PRIORITY_NORMAL           |    0  |
+| THREAD_PRIORITY_BELOW_NORMAL     |   -1  |
+| THREAD_PRIORITY_LOWEST           |   -2  |
+| THREAD_PRIORITY_IDLE             |  -15  |
++----------------------------------+-------+
+
+
+Synchronization ensures that multiple threads work together correctly when they share resources or need to coordinate their actions. Since threads often access the same data, memory, or files, synchronization mechanisms are used to prevent conflicts—for example, ensuring only one thread writes to a file at a time. 
+Sometimes a thread must pause until a certain condition becomes true, such as waiting for another thread to finish writing before it can read the data; during this time, the waiting thread is said to be *blocked*. A blocked thread cannot continue until the required resource or event becomes available. 
+Proper synchronization is essential for preventing race conditions, deadlocks, corruption of shared data, and unpredictable behavior in multithreaded programs.
+

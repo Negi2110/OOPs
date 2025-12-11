@@ -1,0 +1,136 @@
+Here is a **clear explanation** of the slide and how `CreateThread()` works, written in simple, interview-ready language.
+
+---
+
+# ✅ **Creating a Thread in C++ Using Win32 API (CreateThread)**
+
+Before C++11 introduced `std::thread`, Windows provided its own function, **`CreateThread()`**, to create new threads at the operating-system level. This function launches a new thread and tells Windows which function should run inside that thread.
+
+---
+
+# 🔧 **Function Prototype (Simplified Explanation)**
+
+```cpp
+HANDLE CreateThread(
+    LPSECURITY_ATTRIBUTES secAttr,   // security settings (usually NULL)
+    SIZE_T stackSize,                // thread stack size (0 = default)
+    LPTHREAD_START_ROUTINE threadFunc, // function the thread will run
+    LPVOID param,                    // parameter passed to threadFunc
+    DWORD flags,                     // thread creation options (0 = run immediately)
+    LPDWORD threadID                 // returns the thread ID
+);
+```
++---------------------------+---------------------------------------------------------------+
+| Argument Type             | Description                                                   |
++---------------------------+---------------------------------------------------------------+
+| LPSECURITY_ATTRIBUTES     | A pointer to a set of thread security attributes that control |
+|                           | the access to the thread. Default attributes are applied if   |
+|                           | this value is set to NULL.                                    |
++---------------------------+---------------------------------------------------------------+
+| SIZE_T                    | Size in bytes of the thread’s stack. If set to zero the size  |
+|                           | will match that of the creating thread’s stack.               |
++---------------------------+---------------------------------------------------------------+
+| LPTHREAD_START_ROUTINE    | Pointer to a callback function that runs the new thread.      |
++---------------------------+---------------------------------------------------------------+
+| LPVOID                    | Parameters                                                    |
++---------------------------+---------------------------------------------------------------+
+| DWORD                     | Flag indicating execution state of thread. If set to zero     |
+|                           | the thread executes immediately.                              |
++---------------------------+---------------------------------------------------------------+
+| LPDWORD                   | The address of an int variable that holds the thread ID.      |
++---------------------------+---------------------------------------------------------------+
+
+
+### ✔ Key idea
+
+`threadFunc` is **your function** that runs inside the new thread.
+
+---
+
+# 🧵 **Example From Slide**
+
+```cpp
+DWORD threadId;   // Will store the ID of the new thread
+HANDLE hdl;       // Handle to the new thread
+
+hdl = CreateThread(
+        NULL,             // Default security
+        0,                // Default stack size
+        MyThreadFunction, // Function to run in the new thread
+        NULL,             // No parameters passed
+        0,                // Run thread immediately
+        &threadId         // Store thread ID here
+    );
+```
+
+---
+
+# 🧠 **What This Code Does**
+
+1. `CreateThread` is called.
+2. Windows creates a **new operating-system thread**.
+3. That new thread begins executing the function:
+
+   ```cpp
+   DWORD WINAPI MyThreadFunction(LPVOID param)
+   ```
+4. The `threadId` variable receives the unique ID of the new thread.
+5. `hdl` (the handle) can be used to:
+
+   * wait for the thread,
+   * close it,
+   * or manage it further.
+
+---
+
+# 🔥 **Important Notes (Interview-Ready)**
+
+* `CreateThread()` is a **low-level Windows API**, powerful but complex.
+* The thread function must follow the signature:
+
+  ```cpp
+  DWORD WINAPI FunctionName(LPVOID param);
+  ```
+* `HANDLE` must be closed using `CloseHandle(hdl)` when no longer needed.
+* This method works **only on Windows**.
+* Modern C++ uses `std::thread` (portable, simpler), but Win32 threads are still used in game engines, system programming, and high-performance apps.
+
+---
+
+# 📝 **One-line Summary**
+
+> `CreateThread()` creates a new Windows thread and begins executing the function you provide, giving you full OS-level control of thread behavior.
+
+---
+
+Here is a **clear, simple explanation** of *The Thread Function* slide plus the **correct formatted code exactly as shown**.
+
+---
+
+# ✅ **The Thread Function — Explanation (One Paragraph)**
+
+In Windows multithreading, the function executed by a newly created thread must follow a specific signature: `DWORD WINAPI threadfunc(LPVOID param)`. 
+This function acts like the thread’s version of `main()` and serves as the entry point for the new thread. The thread continues running until this function returns, and any value returned becomes the thread’s exit code. 
+If you need to pass data to the thread, it must be passed through the `param` argument, which is a generic pointer (`LPVOID`) that you can cast to any required type inside the thread. This mechanism allows threads to receive input while maintaining a consistent, OS-compatible function signature.
+
+---
+
+# 🧵 **Thread Function Signature (from Slide)**
+
+```cpp
+DWORD WINAPI threadfunc(LPVOID param);
+```
+
+---
+
+# 🔵 **Thread Function Example (from Slide)**
+
+```cpp
+DWORD WINAPI BasicThread(LPVOID param) {
+    cout << "Thread start \n";
+    Sleep(2000);             // Pause thread for 2 seconds
+    cout << "Thread end \n";
+    return 0;                // Thread exit code
+}
+```
+

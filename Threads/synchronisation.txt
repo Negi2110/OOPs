@@ -1,0 +1,134 @@
+// In this example, multiple threads (Thread 1, Thread 2, and Thread 3) are all trying to access the same shared resource **R**, and they attempt to coordinate access using a shared variable called `flag`. 
+// Each thread waits in a loop (`while(flag);`) until the flag becomes 0, sets the flag to 1, accesses the shared resource, and then clears the flag. However, this approach is unsafe because checking and setting the flag is **not atomic**—meaning the CPU can interrupt a thread in the middle of this sequence. 
+// As a result, two threads might see `flag == 0` at the same time and both enter the critical section, causing race conditions and corrupted data. The red arrows in the slide show how threads can overlap incorrectly and break the intended mutual exclusion. 
+// This problem demonstrates why proper synchronization primitives—such as mutexes, critical sections, or semaphores—are necessary; simple shared variables are not enough to safely coordinate threads.
+
+Here is the **Synchronization Problem diagram rewritten in a dotted table-style ASCII format**, preserving the structure of **Thread 1, Thread 2, and Thread 3** exactly as in the slide.
+
+---
+
+# ✅ **Synchronization Problem — Dotted Table Format**
+
+```
++---------------------------------------------------------------+
+|                          Thread 1                             |
++---------------------------------------------------------------+
+| // wait for flag to be cleared                                |
+| while(flag) ;                                                 |
+|                                                               |
+| // set flag                                                   |
+| flag = 1;                                                     |
+|                                                               |
+| // ... access resource R                                      |
+|                                                               |
+| // clear the flag                                             |
+| flag = 0;                                                     |
++---------------------------------------------------------------+
+
+
++---------------------------------------------------------------+
+|                          Thread 2                             |
++---------------------------------------------------------------+
+| // wait for flag to be cleared                                |
+| while(flag) ;                                                 |
+|                                                               |
+| // set flag                                                   |
+| flag = 1;                                                     |
+|                                                               |
+| // ... access resource R                                      |
+|                                                               |
+| // clear the flag                                             |
+| flag = 0;                                                     |
++---------------------------------------------------------------+
+
+
++---------------------------------------------------------------+
+|                          Thread 3                             |
++---------------------------------------------------------------+
+| // wait for flag to be cleared                                |
+| while(flag) ;                                                 |
+|                                                               |
+| // set flag                                                   |
+| flag = 1;                                                     |
+|                                                               |
+| // ... access resource R                                      |
+|                                                               |
+| // clear the flag                                             |
+| flag = 0;                                                     |
++---------------------------------------------------------------+
+
+
+
+
+# ✅ **Solution — Explanation (One Paragraph)**
+
+To solve synchronization problems caused by multiple threads accessing shared resources, Windows provides special functions that perform atomic (uninterrupted) operations for testing and setting flags. 
+These synchronization tools—collectively known as semaphores—ensure that threads do not interfere with one another. Windows offers four main types: a **Semaphore**, which limits how many threads can use a resource at the same time; a **Mutex**, which ensures that **only one thread** can access the resource at any moment; an **Event Object**, which allows threads to wait for and respond to specific signals; and a **Waitable Timer**, which blocks a thread until a specified time or interval has been reached. 
+These mechanisms prevent race conditions, ensure safe sharing of data, and coordinate thread execution.
+
+---
+
+# ✅ **Solution — Dotted Table Format**
+
+```
++---------------------------------------------------------------+
+|                           Solution                            |
++---------------------------------------------------------------+
+| Windows provides atomic (uninterrupted) operations to safely  |
+| test and set flags, preventing synchronization issues.        |
+|                                                               |
+| Synchronisation flags are known as semaphores.                |
++---------------------------------------------------------------+
+| Four Types of Synchronization Objects                         |
++---------------------------------------------------------------+
+| Semaphore        : Restricts how many threads can access a    |
+|                    resource at the same time.                 |
++---------------------------------------------------------------+
+| Mutex Semaphore  : Guarantees only ONE thread can access the  |
+|                    resource concurrently.                     |
++---------------------------------------------------------------+
+| Event Object     : Signals threads when a specific event has  |
+|                    occurred.                                  |
++---------------------------------------------------------------+
+| Waitable Timer   : Blocks a thread until a specified time or  |
+|                    interval is reached.                       |
++---------------------------------------------------------------+
+
+
+
+
+
+
+# ✅ **Mutex Functions — Explanation (One Paragraph)**
+
+A mutex (mutual exclusion object) ensures that only one thread at a time can access a shared resource. Windows provides the `CreateMutex()` function to create or open a mutex, allowing multiple threads to synchronize access using a single shared name. 
+The function takes three parameters: optional security attributes, a Boolean `acquire` flag, and an optional name used to identify the mutex globally. 
+If `acquire` is set to `TRUE`, the calling thread immediately attempts to take ownership of the mutex as soon as it is created; otherwise, it starts in a non-owned state. 
+The function returns a handle that threads use to lock or release the mutex, ensuring exclusive access to critical sections of code and preventing race conditions.
+
+---
+
+# ✅ **Mutex Functions — Dotted Table Format**
+
+```
++---------------------------------------------------------------+
+|                       Mutex Functions                         |
++---------------------------------------------------------------+
+| HANDLE CreateMutex(                                           |
+|     LPSECURITY_ATTRIBUTES secAttr,                            |
+|     BOOL acquire,                                             |
+|     LPCSTR name                                               |
+| );                                                            |
++---------------------------------------------------------------+
+| Windows provides CreateMutex() to create or open a mutex.     |
++---------------------------------------------------------------+
+| - The mutex can have a global name, allowing multiple threads |
+|   (or processes) to reference the same mutex object.          |
++---------------------------------------------------------------+
+| - The returned HANDLE is used by threads to manage the mutex. |
++---------------------------------------------------------------+
+| - If 'acquire' is TRUE, the thread attempts to immediately    |
+|   gain ownership of the mutex upon creation.                  |
++---------------------------------------------------------------+
+```
+

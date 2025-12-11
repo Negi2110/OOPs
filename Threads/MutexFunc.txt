@@ -1,0 +1,76 @@
+Here is a **single, clean, interview-ready explanation** combining BOTH slides:
+**WaitForSingleObject + ReleaseMutex** → in **one compact paragraph**, and then the **function calls in dotted-table format**.
+
+---
+
+# ✅ **Combined Mutex Functions — Explanation (One Paragraph)**
+
+To safely access a shared resource, a thread must first lock the mutex using `WaitForSingleObject()`, which blocks the thread until the mutex becomes available or until a timeout occurs. This ensures mutual exclusion—only one thread can enter the critical section at a time. Once the thread has finished using the shared resource, it must call `ReleaseMutex()` to unlock the mutex and allow other waiting threads to continue. If `ReleaseMutex()` returns zero, it indicates the release operation failed (usually because the thread does not own the mutex). Together, these two functions form the core mechanism for thread synchronization in Windows, preventing race conditions and ensuring orderly access to shared data.
+
+---
+
+# ✅ **Mutex Functions — Dotted Table Summary**
+
+```
++---------------------------------------------------------------+
+|                      Mutex Lock Function                      |
++---------------------------------------------------------------+
+| DWORD WaitForSingleObject( HANDLE hObject,                    |
+|                             DWORD  howLong );                 |
++---------------------------------------------------------------+
+| - Blocks the calling thread until the mutex is available      |
+|   OR a timeout occurs.                                        |
+| - Should be placed before accessing the shared resource.      |
+| - Returns WAIT_TIMEOUT if the mutex is not available within   |
+|   the given time.                                             |
++---------------------------------------------------------------+
+
+
++---------------------------------------------------------------+
+|                     Mutex Release Function                    |
++---------------------------------------------------------------+
+| BOOL ReleaseMutex( HANDLE hMutex );                           |
++---------------------------------------------------------------+
+| - Releases the mutex after the thread has finished with the   |
+|   shared resource.                                            |
+| - Returns zero if the release failed (e.g., thread does not   |
+|   own the mutex).                                             |
++---------------------------------------------------------------+
+```
+
+---
+
+
+
+
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| Feature               | Mutex                     | Critical Section          | Semaphore                     |
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| Basic Use             | Ensures only ONE thread   | Ensures only ONE thread   | Allows N threads to access    |
+|                       | can access a resource     | can access a resource     | a resource (counting semaphore)|
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| Kernel/User Mode      | Kernel object (slow)      | User-mode only (very fast)| Kernel object                 |
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| Cross-Process Use     | YES (named mutex)         | NO (same process only)    | YES (named semaphore)         |
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| Supports Timeouts     | YES (WaitForSingleObject) | YES                       | YES                           |
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| Ownership             | Owned by a thread         | Owned by a thread         | Not owned; acts as counter    |
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| Blocking Behavior     | Blocks until free         | Blocks until free         | Blocks if count == 0          |
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| Performance           | Medium (kernel switch)    | Fastest (user-space)      | Medium (kernel switch)        |
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| When to Use           | Cross-process locking,    | Intra-process locking,    | Limit number of concurrent    |
+|                       | OS-level synchronization   | very fast resource access | threads accessing a resource  |
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| Initial Count         | Always 1                  | Always 1                  | Can be >1 (e.g., 5 threads)   |
++-----------------------+---------------------------+---------------------------+-------------------------------+
+| Example Use Case      | File locking across apps  | Protecting shared memory  | Thread pool, connection limit |
++-----------------------+---------------------------+---------------------------+-------------------------------+
+
+Mutex → 1 thread at a time, cross-process, slower (kernel).
+
+Critical Section → 1 thread at a time, same process only, very fast (user-mode).
+
+Semaphore → Allows multiple threads (up to a limit), works cross-process.
