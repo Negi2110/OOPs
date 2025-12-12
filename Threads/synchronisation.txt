@@ -132,3 +132,8 @@ The function returns a handle that threads use to lock or release the mutex, ens
 +---------------------------------------------------------------+
 ```
 
+✅ Issues with Using Member Functions as Thread Callbacks (One Paragraph)
+
+In Win32 threading (and most C-style thread APIs), the thread function must match a specific prototype—for example, DWORD WINAPI func(LPVOID param). 
+Non-static member functions cannot be used directly as thread entry points because they implicitly receive the hidden this pointer, which changes their function signature and prevents them from matching the required prototype. 
+Only static member functions can be used as thread functions because they do not have a this pointer and behave like regular free functions. To run a non-static member function in a thread, you must either: (1) use a static function that receives a pointer to the object via the thread parameter and then calls the desired method, or (2) use modern C++11 std::thread, which can directly bind this and call member functions without the need for static wrappers.

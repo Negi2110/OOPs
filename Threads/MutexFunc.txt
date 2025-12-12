@@ -1,7 +1,4 @@
-Here is a **single, clean, interview-ready explanation** combining BOTH slides:
-**WaitForSingleObject + ReleaseMutex** → in **one compact paragraph**, and then the **function calls in dotted-table format**.
 
----
 
 # ✅ **Combined Mutex Functions — Explanation (One Paragraph)**
 

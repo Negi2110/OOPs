@@ -1,0 +1,207 @@
+/*
+    =====================================================================================
+    🔹 FUNCTORS IN C++ — COMPLETE INTERVIEW EXPLANATION
+    =====================================================================================
+
+    🔸 What is a Functor?
+    ----------------------
+    A *functor* (function object) is a class or struct that overloads the function-call 
+    operator `operator()`. This allows objects of that class to be invoked like a 
+    function. In simple terms, a functor is an object that behaves like a function.
+
+        Example:
+            class Add {
+            public:
+                int operator()(int a, int b) { return a + b; }
+            };
+
+            Add add;
+            int result = add(3, 4);   // calls operator()(3, 4)
+
+    Functors give the flexibility of objects + the convenience of functions.
+
+    -------------------------------------------------------------------------------------
+    🔸 Why Do We Use Functors? (Interview Perspective)
+    -------------------------------------------------------------------------------------
+    ✔ They can store state (unlike normal functions)  
+    ✔ They work beautifully with STL algorithms like std::sort, std::for_each, etc.  
+    ✔ They allow behavior + data to be packaged together (OOP + Functional)  
+    ✔ They are faster than std::function due to compiler optimizations  
+    ✔ They integrate well with multithreading (encapsulating thread tasks)  
+    ✔ They avoid the need for global or static functions  
+
+    Example of storing state:
+        class Counter {
+            int count = 0;
+        public:
+            void operator()(int x) {
+                count += x;  // functor stores local state
+            }
+        };
+
+    -------------------------------------------------------------------------------------
+    🔸 How Functors Work Internally
+    -------------------------------------------------------------------------------------
+    When you call:
+        obj(10);
+
+    The compiler translates this to:
+        obj.operator()(10);
+
+    So the function-call syntax is just syntactic sugar for calling operator().
+
+    This is why any object with operator() becomes "callable".
+
+    -------------------------------------------------------------------------------------
+    🔸 Functor vs Lambda vs Function Pointer (Interview Gold)
+    -------------------------------------------------------------------------------------
+    • FUNCTION POINTER → simple, cannot store state.  
+    • FUNCTOR          → object + behavior, can hold data, reusable.  
+    • LAMBDA           → lightweight functor created automatically by the compiler.
+
+    Lambdas are actually compiler-generated functor objects.
+
+    -------------------------------------------------------------------------------------
+    🔸 Using Functors with std::thread
+    -------------------------------------------------------------------------------------
+    std::thread accepts anything callable — including functors.
+
+        class Task {
+        public:
+            void operator()(int x) {
+                while (x --> 0) {
+                    std::cout << "Running Thread: " << x << std::endl;
+                }
+            }
+        };
+
+        std::thread t(Task(), 10);
+        t.join();
+
+    Here:
+    • Task() creates a temporary functor object.
+    • The thread calls Task::operator()(10) inside a new thread.
+    • Functors are great for threads because they can store data inside the object.
+
+    -------------------------------------------------------------------------------------
+    🔸 Advantages of Functors (What You Must Say in Interviews)
+    -------------------------------------------------------------------------------------
+    ✔ Faster than std::function and function pointers  
+    ✔ Can maintain internal state across calls  
+    ✔ Can be passed to algorithms and threads easily  
+    ✔ Easily optimized by the compiler (inlining, removing indirections)  
+    ✔ More flexible and powerful than plain functions  
+
+    -------------------------------------------------------------------------------------
+    🔸 Common Interview Questions About Functors
+    -------------------------------------------------------------------------------------
+    Q1. What is a functor?  
+        → A class with operator() overloaded so its objects behave like functions.
+
+    Q2. Why are functors better than function pointers?  
+        → They can store data, be optimized better, and used in object-oriented designs.
+
+    Q3. How are lambdas related to functors?  
+        → Lambdas are compiler-generated functor objects.
+
+    Q4. How does std::thread use functors?  
+        → The thread calls the functor’s operator() in a separate execution context.
+
+    Q5. Can functors maintain internal state?  
+        → Yes, they can store values as member variables.
+
+    -------------------------------------------------------------------------------------
+    🔸 Final Summary
+    -------------------------------------------------------------------------------------
+    Functors combine object-oriented power with function-like behavior. They are 
+    essential in modern C++ for threading, callbacks, and STL algorithms. Knowing 
+    how functors work, why they exist, and how they compare with lambdas is a key 
+    interview skill for C++ developers.
+*/
+
+
+
+You can make multiple functors in one class — simply overload operator() with different signatures OR give each functor its own name as separate call operators.
+
+There are 2 ways to do it, depending on what you need.
+
+✅ WAY 1: Overload operator() (Multiple Functors by Signature)
+
+C++ allows multiple functors in one class by overloading operator() with different parameters.
+
+/*
+    Multiple functors inside one class by overloading operator()
+    Each overload acts like a separate functor.
+*/
+class MultiFunctor {
+public:
+    void operator()(int x) {
+        std::cout << "Functor 1: int version: " << x << std::endl;
+    }
+
+    void operator()(double d) {
+        std::cout << "Functor 2: double version: " << d << std::endl;
+    }
+
+    void operator()(std::string msg) {
+        std::cout << "Functor 3: string version: " << msg << std::endl;
+    }
+};
+
+int main() {
+    MultiFunctor mf;
+
+    mf(10);           // calls operator()(int)
+    mf(5.5);          // calls operator()(double)
+    mf("Hello");      // calls operator()(string)
+}
+
+✔ All 3 operator() overloads are separate functors
+
+This is the correct and standard way to put multiple functors inside one class.
+
+✅ WAY 2: Named Functors Inside a Class (Each Functor as its own callable class)
+
+You can also embed nested functor classes inside one class:
+
+class A {
+public:
+    class Functor1 {
+    public:
+        void operator()(int x) {
+            std::cout << "Functor1: " << x << std::endl;
+        }
+    };
+
+    class Functor2 {
+    public:
+        void operator()(int x) {
+            std::cout << "Functor2: " << x << std::endl;
+        }
+    };
+};
+
+int main() {
+    A::Functor1 f1;
+    A::Functor2 f2;
+
+    f1(10);
+    f2(20);
+}
+
+✔ Useful when you want multiple independent functors with different behavior
+❗ WAY 3: Two functors with same signature? — NOT ALLOWED
+
+You CANNOT do this:
+
+void operator()(int x) { ... }
+void operator()(int x) { ... }   // ❌ ERROR – same signature
+
+
+Because overloading requires different parameter lists.
+
+🧠 Interview Explanation (Use This!)
+
+Yes, we can have multiple functors in one class by overloading operator() with different signatures. Each overload behaves like a separate functor.
+Alternatively, we can define multiple named functor classes inside a class.
+The only restriction is that overloads must have different parameter types.
