@@ -1,0 +1,77 @@
+/*
+    ================================================================================
+    🔹 VIRTUAL INHERITANCE — INTERVIEW EXPLANATION
+    ================================================================================
+
+    Virtual inheritance in C++ is used to solve the **Diamond Problem** that occurs 
+    during multiple inheritance. It ensures that a class derived from multiple 
+    parents inherits only ONE shared instance of a common base class.
+
+                       A
+                      / \
+                     B   C
+                      \ /
+                       D
+
+    Without virtual inheritance:
+        - Class D gets TWO copies of A (one through B, one through C)
+        - This causes ambiguity:
+              D.obj.A::value   // which A?
+        - Leads to duplicated data and conflicts known as the "Diamond Problem".
+
+    With virtual inheritance:
+        - B and C virtually inherit from A:
+              class B : virtual public A {};
+              class C : virtual public A {};
+        - D now inherits ONLY ONE common instance of A.
+        - Ambiguities disappear and storage is reduced.
+
+    ================================================================================
+    🔸 Why do we need Virtual Inheritance? (Interview Points)
+    ------------------------------------------------------------------------------
+    ✔ To avoid duplicate base class copies in multiple inheritance  
+    ✔ To prevent ambiguity when accessing members of the top base class  
+    ✔ To ensure there is only ONE shared base class subobject  
+    ✔ To solve the "Diamond Problem"  
+    ✔ To make data members consistent and not duplicated  
+
+    ================================================================================
+    🔸 How Virtual Inheritance Works Internally
+    ------------------------------------------------------------------------------
+    • The compiler inserts a virtual base pointer (vbptr) in classes B and C  
+    • Both B and C refer to the SAME A subobject  
+    • Class D receives only one A instance  
+    • Memory layout becomes non-linear but safe and predictable  
+
+    ================================================================================
+    🔸 Code Example
+    ------------------------------------------------------------------------------
+        class A {
+        public:
+            int x = 10;
+        };
+
+        class B : virtual public A {};
+        class C : virtual public A {};
+
+        class D : public B, public C {};
+
+        int main() {
+            D obj;
+            cout << obj.x << endl;  // ✔ No ambiguity, only 1 A inherited
+        }
+
+    ================================================================================
+    🔸 Interview Summary
+    ------------------------------------------------------------------------------
+    "Virtual inheritance ensures that in a multiple inheritance hierarchy, a derived
+     class receives only ONE instance of a shared base class. It solves the diamond 
+     problem by preventing duplicate base class copies and removing ambiguity."
+
+    This is why, in C++, we write:
+        class B : virtual public A {};
+        class C : virtual public A {};
+
+    ================================================================================
+
+*/

@@ -1,0 +1,147 @@
+/*
+    ====================================================================================
+    🔹 PUBLIC vs PRIVATE vs PROTECTED INHERITANCE — INTERVIEW EXPLANATION (WITH EXAMPLES)
+    ====================================================================================
+
+    In C++, the type of inheritance controls HOW the members of the base class are 
+    treated in the derived class. This is one of the most commonly asked interview 
+    questions because it tests knowledge of access specifiers and OOP principles.
+
+    ------------------------------------------------------------------------------------
+    🔸 1️⃣ PUBLIC INHERITANCE  (Most Common)
+    ------------------------------------------------------------------------------------
+    Meaning: "Derived class IS-A Base class"
+    - Public members of Base   → remain public in Derived
+    - Protected members of Base → remain protected in Derived
+    - Private members of Base   → NOT accessible in Derived
+
+    This is the inheritance used in real-world OOP designs because it models 
+    a true "IS-A" relationship.
+
+    Example:
+        class Base {
+        public:
+            int a = 10;
+        protected:
+            int b = 20;
+        private:
+            int c = 30;
+        };
+
+        class Derived : public Base {
+        public:
+            void fun() {
+                cout << a;   // ✔ OK (public → public)
+                cout << b;   // ✔ OK (protected → protected)
+                // cout << c; // ❌ ERROR (private is never inherited)
+            }
+        };
+
+    Interview takeaway:
+    ✔ Public inheritance preserves original access levels  
+    ✔ Models IS-A relationship  
+    ✔ Most widely used form of inheritance  
+
+
+    ------------------------------------------------------------------------------------
+    🔸 2️⃣ PRIVATE INHERITANCE
+    ------------------------------------------------------------------------------------
+    Meaning: "Derived class HAS-A Base class implementation"
+    - Public members of Base   → become private in Derived
+    - Protected members of Base → become private in Derived
+    - Private members of Base   → NOT accessible in Derived
+
+    Private inheritance does NOT express an "IS-A" relationship.
+    Instead, it expresses "Implemented-in-terms-of".
+
+    Example:
+        class Base {
+        public:
+            int a = 10;
+        protected:
+            int b = 20;
+        };
+
+        class Derived : private Base {
+        public:
+            void fun() {
+                cout << a;   // ✔ OK (public → private → accessible inside class)
+                cout << b;   // ✔ OK (protected → private → accessible inside class)
+            }
+        };
+
+        int main() {
+            Derived d;
+            // cout << d.a;  // ❌ ERROR: 'a' is now private in Derived
+        }
+
+    Interview takeaway:
+    ✔ Converts base class public/protected members into private  
+    ✔ Used when you want to reuse implementation, not expose interface  
+    ✔ Not an IS-A relationship  
+
+
+    ------------------------------------------------------------------------------------
+    🔸 3️⃣ PROTECTED INHERITANCE
+    ------------------------------------------------------------------------------------
+    (Less common, but interviewers LOVE to ask)
+
+    - Public members of Base   → become protected in Derived
+    - Protected members of Base → remain protected
+    - Private members of Base   → NOT accessible
+
+    The derived class can use base members internally, but outside 
+    users cannot access them.
+
+    Example:
+        class Base {
+        public:
+            int a = 10;
+        protected:
+            int b = 20;
+        };
+
+        class Derived : protected Base {
+        public:
+            void fun() {
+                cout << a;   // ✔ OK (public → protected)
+                cout << b;   // ✔ OK (protected → protected)
+            }
+        };
+
+        int main() {
+            Derived d;
+            // cout << d.a; // ❌ ERROR: 'a' is protected in Derived
+        }
+
+    Interview takeaway:
+    ✔ Good when you want to inherit but hide all base class interface  
+    ✔ Still not an IS-A relationship externally  
+
+
+    ====================================================================================
+    🔥 FINAL INTERVIEW SUMMARY (Must Memorize)
+    ====================================================================================
+
+    PUBLIC INHERITANCE:
+        Base public    → Derived public  
+        Base protected → Derived protected  
+        Base private   → Not accessible  
+        ✔ IS-A relationship  
+        ✔ Most common  
+
+    PROTECTED INHERITANCE:
+        Base public    → Derived protected  
+        Base protected → Derived protected  
+        Base private   → Not accessible  
+        ✔ Used when you want inheritance but hide public interface  
+
+    PRIVATE INHERITANCE:
+        Base public    → Derived private  
+        Base protected → Derived private  
+        Base private   → Not accessible  
+        ✔ Used for implementation reuse  
+        ✔ HAS-A relationship, NOT IS-A  
+
+    ====================================================================================
+*/
