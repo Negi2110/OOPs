@@ -1,0 +1,329 @@
+// =============================================================
+// EXPLANATION OF THE DIAGRAM (RACE CONDITION)
+// =============================================================
+//
+// The diagram shows TWO THREADS: T1 and T2
+// Both threads are trying to access and modify the SAME shared data (x).
+//
+// Shared Variable:
+// int x = 1;
+//
+// Both threads execute the same operation:
+// x++   (increment x by 1)
+//
+//
+// -------------------------------------------------------------
+// HOW x++ WORKS INTERNALLY (IMPORTANT INTERVIEW POINT)
+// -------------------------------------------------------------
+//
+// The operation x++ is NOT atomic.
+// It is broken into THREE CPU-level steps:
+//
+// 1. LOAD      -> Read x from memory into a register
+// 2. INCREMENT -> Increase the value by 1
+// 3. STORE     -> Write the updated value back to memory
+//
+// So internally:
+// x++  ===>
+//   temp = x;
+//   temp = temp + 1;
+//   x = temp;
+//
+// -------------------------------------------------------------
+// STEP-BY-STEP EXECUTION (AS SHOWN IN DIAGRAM)
+// -------------------------------------------------------------
+//
+// Initial value:
+// x = 1
+//
+// Thread T1 starts:
+// 1. T1 LOADS x (reads x = 1 into CPU register)
+//
+// ---- Context switch happens here ----
+//
+// Thread T2 starts BEFORE T1 finishes:
+//
+// 2. T2 LOADS x (reads x = 1 into CPU register)
+// 3. T2 INCREMENTS value -> 2
+// 4. T2 STORES value back -> x = 2
+//
+// ---- Context switch back to T1 ----
+//
+// Thread T1 resumes:
+// 5. T1 INCREMENTS its local copy (1 -> 2)
+// 6. T1 STORES value back -> x = 2
+//
+// -------------------------------------------------------------
+// FINAL RESULT
+// -------------------------------------------------------------
+//
+// Expected value after two increments:
+// x = 3
+//
+// Actual value due to race condition:
+// x = 2
+//
+// One increment is LOST.
+//
+// -------------------------------------------------------------
+// WHY THIS IS A RACE CONDITION
+// -------------------------------------------------------------
+//
+// • Both threads accessed shared data simultaneously
+// • No synchronization mechanism was used
+// • The result depends on thread execution order
+// • Program behavior becomes unpredictable
+//
+// This exact situation is called a RACE CONDITION.
+//
+// -------------------------------------------------------------
+// HOW TO FIX THIS PROBLEM
+// -------------------------------------------------------------
+//
+// Use synchronization to protect the critical section:
+//
+// 1. Mutex
+// 2. Critical Section
+// 3. Atomic variable (std::atomic<int>)
+//
+// Example fix using mutex:
+//
+// mutex m;
+// m.lock();
+// x++;
+// m.unlock();
+//
+// OR using atomic:
+//
+// std::atomic<int> x;
+// x++;
+//
+// -------------------------------------------------------------
+// INTERVIEW ONE-LINER
+// -------------------------------------------------------------
+//
+// A race condition occurs when multiple threads perform non-atomic
+// operations on shared data without synchronization, leading to
+// incorrect and unpredictable results.
+// =============================================================
+
+
+
+// =============================================================
+// EXPLANATION OF THE DIAGRAM (MUTEX WORKING & CPU SCHEDULING)
+// =============================================================
+//
+// The diagram shows how a MUTEX (m) prevents race conditions
+// when two threads (T1 and T2) try to access a shared resource.
+//
+// m = mutex
+// T1 and T2 are two concurrent threads.
+//
+// -------------------------------------------------------------
+// LEFT SIDE OF DIAGRAM (Mutex Lock / Unlock Sequence)
+// -------------------------------------------------------------
+//
+// Thread T1:
+//   m.lock();        // T1 acquires the mutex
+//   (critical work)  // Access shared resource safely
+//   m.unlock();      // T1 releases the mutex
+//
+// Thread T2:
+//   m.lock();        // T2 tries to acquire mutex
+//                    // If T1 holds it, T2 BLOCKS (waits)
+//   (critical work)  // Runs ONLY after T1 unlocks
+//   m.unlock();      // T2 releases the mutex
+//
+// IMPORTANT:
+// • Only ONE thread can hold the mutex at any time.
+// • Mutex enforces mutual exclusion.
+// • Race condition is avoided.
+//
+// -------------------------------------------------------------
+// RIGHT SIDE OF DIAGRAM (CPU SCHEDULING & TIME SLICING)
+// -------------------------------------------------------------
+//
+// The CPU is shared between threads using TIME SLICING.
+//
+// Example shown:
+//   CPU time slice = 1 / 1,000,000 seconds
+//
+// Execution flow:
+//   - CPU executes T1 for a tiny time slice
+//   - Context switch happens
+//   - CPU executes T2
+//   - Switches back to T1, and so on...
+//
+// Even on a SINGLE CPU core:
+// • Threads appear to run in parallel
+// • But execution is actually interleaved
+//
+// -------------------------------------------------------------
+// WHY MUTEX IS NECESSARY (KEY INTERVIEW POINT)
+// -------------------------------------------------------------
+//
+// Without mutex:
+// • T1 and T2 may both enter the critical section
+// • Data corruption occurs
+//
+// With mutex:
+// • If T1 is inside the critical section
+// • T2 is BLOCKED at m.lock()
+// • CPU may still schedule T2,
+//   but it CANNOT proceed past the lock
+//
+// -------------------------------------------------------------
+// BLOCKED THREAD BEHAVIOR
+// -------------------------------------------------------------
+//
+// • When T2 calls m.lock() and mutex is held:
+//     - T2 enters WAITING / BLOCKED state
+//     - CPU does NOT waste cycles spinning
+//     - OS wakes T2 only after mutex is unlocked
+//
+// -------------------------------------------------------------
+// FINAL RESULT
+// -------------------------------------------------------------
+//
+// • Mutual exclusion guaranteed
+// • Shared data remains consistent
+// • Execution order becomes SAFE and predictable
+//
+// -------------------------------------------------------------
+// INTERVIEW ONE-LINER
+// -------------------------------------------------------------
+//
+// A mutex ensures that even though the CPU switches rapidly
+// between threads, only one thread can execute the critical
+// section at a time, preventing race conditions.
+// =============================================================
+
+
+
+Yes — **that’s the right intuition** 👍
+Let me refine it so it’s **technically accurate and interview-perfect**.
+
+---
+
+## ✅ Short answer
+
+👉 **Yes, blocking a thread does introduce OS overhead**,
+but **that overhead is usually intentional and often worth it**.
+
+---
+
+## 🔍 What “thread blocking overhead” really means
+
+When a thread calls a **blocking operation** like:
+
+```cpp
+mtx.lock();          // or WaitForSingleObject, sleep, join, etc.
+```
+
+### What the OS does:
+
+1. Saves the thread’s CPU state (registers, stack pointer)
+2. Marks the thread as **blocked / waiting**
+3. Performs a **context switch**
+4. Schedules another runnable thread
+
+This involves:
+
+* Kernel mode transition
+* Scheduler work
+* Cache effects
+
+➡️ **This is the overhead you’re thinking about.**
+
+---
+
+## 🧠 Important correction (interview nuance)
+
+### ❌ Incorrect assumption
+
+> “Blocking is bad and should be avoided”
+
+### ✅ Correct understanding
+
+> **Blocking has overhead, but it saves CPU cycles.**
+
+Blocking:
+
+* Costs a context switch
+* BUT avoids wasting CPU in busy waiting
+
+---
+
+## 🆚 Blocking vs Non-blocking (try_lock)
+
+### 🔹 `lock()` (blocking)
+
+```cpp
+mtx.lock();   // blocks if unavailable
+```
+
+* OS puts thread to sleep
+* CPU is free to run other threads
+* **Higher latency, lower CPU waste**
+* Best for:
+
+  * long critical sections
+  * correctness-critical code
+
+---
+
+### 🔹 `try_lock()` (non-blocking)
+
+```cpp
+if (mtx.try_lock()) { ... }
+```
+
+* No OS blocking
+* Thread keeps running
+* Possible **busy looping**
+* **Lower latency, higher CPU usage**
+* Best for:
+
+  * short critical sections
+  * optional work
+  * real-time / low-latency paths
+
+---
+
+## 🚻 Bathroom analogy (final clarity)
+
+* **lock()** → wait outside → OS manages queue
+* **try_lock()** → peek once → walk away
+
+Waiting outside costs effort (context switch),
+but pacing around checking repeatedly wastes energy (CPU).
+
+---
+
+## ✍️ Comment-only interview explanation
+
+```cpp
+// Blocking a thread (e.g., mutex.lock()) causes OS overhead:
+// - Context switch
+// - Scheduler involvement
+// - Kernel mode transition
+//
+// However:
+// - Blocking prevents busy waiting
+// - Saves CPU cycles
+// - Is usually the correct and safe choice
+//
+// Non-blocking (try_lock()):
+// - Avoids blocking overhead
+// - But may waste CPU if retried frequently
+//
+// Interview takeaway:
+// Blocking has overhead, but uncontrolled spinning is often worse.
+```
+
+---
+
+## ⭐ One-line interview answer
+
+> “Blocking a thread introduces context-switch overhead, but it prevents CPU waste; non-blocking avoids blocking overhead but can waste CPU if misused.”
+

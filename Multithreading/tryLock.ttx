@@ -1,0 +1,108 @@
+// =============================================================
+// MUTEX EXPLANATION WITH BATHROOM ANALOGY (INTERVIEW READY)
+// =============================================================
+//
+// Think of a mutex like a BATHROOM 🚻
+//
+// • The bathroom can be used by ONLY ONE person at a time.
+// • The bathroom represents the CRITICAL SECTION.
+// • The key to the bathroom represents the MUTEX.
+//
+// -------------------------------------------------------------
+// CASE 1: Using lock()
+// -------------------------------------------------------------
+//
+// Code:
+//   m.lock();
+//
+// Bathroom analogy:
+// • You go to the bathroom.
+// • If it is occupied, you WAIT outside.
+// • You do nothing else until it becomes free.
+// • Once free, you enter and lock the door.
+//
+// Thread behavior:
+// • The thread gets BLOCKED.
+// • The OS pauses the thread.
+// • The thread cannot execute any further code.
+// • It resumes only after the mutex is unlocked.
+//
+// Interview point:
+// • lock() is a BLOCKING call.
+// • The protected task will run later, not immediately.
+//
+// -------------------------------------------------------------
+// CASE 2: Using try_lock()
+// -------------------------------------------------------------
+//
+// Code:
+//   if (m.try_lock()) { /* critical section */ }
+//
+// Bathroom analogy:
+// • You check the bathroom door ONCE.
+// • If it is free, you enter.
+// • If it is occupied, you WALK AWAY immediately.
+// • You do NOT wait.
+// • You do NOT keep checking automatically.
+//
+// Thread behavior:
+// • The thread is NOT blocked.
+// • It continues executing other code.
+// • The protected task is skipped or deferred.
+//
+// Interview point:
+// • try_lock() is a NON-BLOCKING call.
+// • The task may never run, depending on program logic.
+//
+// -------------------------------------------------------------
+// IMPORTANT CLARIFICATION (COMMON INTERVIEW TRAP)
+// -------------------------------------------------------------
+//
+// Incorrect statement:
+//   "Other thread will not be able to perform its task."
+//
+// Correct statement:
+// • Other thread will NOT be able to perform the
+//   CRITICAL SECTION task.
+// • The thread ITSELF is NOT stopped.
+// • It may still perform other NON-protected work.
+//
+// -------------------------------------------------------------
+// DOES try_lock() KEEP CHECKING AUTOMATICALLY?
+// -------------------------------------------------------------
+//
+// NO.
+//
+// try_lock():
+// • Checks mutex availability ONLY ONCE.
+// • Returns immediately.
+// • Does NOT retry.
+// • Does NOT spin.
+// • Does NOT block.
+//
+// If repeated checking happens, it is because
+// the PROGRAMMER wrote a loop (busy waiting).
+//
+// -------------------------------------------------------------
+// SUMMARY COMPARISON
+// -------------------------------------------------------------
+//
+// lock():
+// • Blocks the thread
+// • Waits until mutex is available
+// • OS handles waiting
+//
+// try_lock():
+// • Never blocks
+// • Checks once and returns
+// • Thread keeps running
+//
+// -------------------------------------------------------------
+// INTERVIEW ONE-LINER
+// -------------------------------------------------------------
+//
+// If a mutex is occupied, other threads cannot execute
+// the critical section; with lock() they wait, and with
+// try_lock() they move on.
+//
+// =============================================================
