@@ -1,0 +1,114 @@
+// =============================================================
+// BUFFER IN C++ (Interview Perspective)
+// =============================================================
+//
+// A buffer is a TEMPORARY storage area in memory
+// used to hold data while it is being transferred,
+// processed, or read/written.
+//
+// Buffers help improve performance and manage
+// differences in speed between components.
+//
+// =============================================================
+// WHY BUFFERS ARE USED
+// =============================================================
+//
+// 1. To improve performance
+//    - Reduces frequent I/O operations
+//    - Data is processed in chunks instead of one byte at a time
+//
+// 2. To handle speed mismatch
+//    - CPU is much faster than disk, network, or keyboard
+//    - Buffer smooths this difference
+//
+// 3. To temporarily store data
+//    - Input buffer
+//    - Output buffer
+//
+// =============================================================
+// COMMON TYPES OF BUFFERS IN C++
+// =============================================================
+//
+// 1. INPUT BUFFER
+//    - Stores input data before program processes it
+//    - Example: keyboard input buffer
+//
+// 2. OUTPUT BUFFER
+//    - Stores output data before it is written to screen/file
+//    - Example: cout buffer
+//
+// 3. MEMORY BUFFER
+//    - User-defined arrays or memory blocks
+//    - Used for data manipulation
+//
+// =============================================================
+// SIMPLE BUFFER EXAMPLE
+// =============================================================
+//
+// char buffer[100];
+//
+// buffer -> temporary storage for characters
+//
+// =============================================================
+// BUFFER IN I/O STREAMS
+// =============================================================
+//
+// cout is BUFFERED output:
+// - Data is first written to a buffer
+// - Displayed later (on flush, newline, or program end)
+//
+// cin uses INPUT buffer:
+// - Stores typed input until extracted
+//
+// Example:
+//     cout << "Hello";   // stored in buffer
+//     cout << endl;      // buffer flushed
+//
+// =============================================================
+// BUFFER FLUSHING
+// =============================================================
+//
+// Flushing means sending buffered data immediately.
+//
+// Ways to flush output buffer:
+// - std::endl
+// - std::flush
+// - Buffer full
+// - Program termination
+//
+// =============================================================
+// BUFFER OVERFLOW (IMPORTANT INTERVIEW POINT)
+// =============================================================
+//
+// Buffer overflow occurs when more data is written
+// than the buffer can hold.
+//
+// Example:
+//     char buf[5];
+//     strcpy(buf, "HelloWorld");  // OVERFLOW
+//
+// Consequences:
+// - Memory corruption
+// - Security vulnerabilities
+// - Program crashes
+//
+// =============================================================
+// BUFFER VS CACHE (INTERVIEW TRAP)
+// =============================================================
+//
+// Buffer:
+// - Temporary data storage
+// - Used during data transfer
+//
+// Cache:
+// - Stores frequently used data
+// - Used to speed up repeated access
+//
+// =============================================================
+// INTERVIEW ONE-LINER
+// =============================================================
+//
+// "A buffer is a temporary memory area used to store data
+// during I/O or processing to improve performance and handle
+// speed differences between system components."
+// =============================================================

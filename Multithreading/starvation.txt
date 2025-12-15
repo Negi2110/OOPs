@@ -1,0 +1,326 @@
+Yes 👍 **exactly** — that’s a correct and important realization.
+
+Here is a **clear, interview-ready explanation written purely in C++ comment format**, connecting **infinite blocking → starvation**:
+
+```cpp
+// =============================================================
+// STARVATION IN MULTITHREADING
+// =============================================================
+//
+// Starvation occurs when a thread is READY to run
+// but NEVER gets CPU time or access to a required resource.
+//
+// -------------------------------------------------------------
+// HOW INFINITE BLOCKING LEADS TO STARVATION
+// -------------------------------------------------------------
+//
+// If a thread:
+// - Calls mutex.lock()
+// - And the mutex is NEVER released
+//
+// Then:
+// - The thread remains BLOCKED forever
+// - It never enters the critical section
+// - This situation is called STARVATION
+//
+// -------------------------------------------------------------
+// EXAMPLE SCENARIO
+// -------------------------------------------------------------
+//
+// Thread T1:
+//     m.lock();
+//     // holds mutex for a very long time (or forever)
+//
+// Thread T2:
+//     m.lock();   // blocks here forever
+//
+// Result:
+// - T2 is starved
+// - Program may appear "hung"
+// - No progress for T2
+//
+// -------------------------------------------------------------
+// KEY DIFFERENCE
+// -------------------------------------------------------------
+//
+// Deadlock:
+// - Threads wait on EACH OTHER
+//
+// Starvation:
+// - Thread waits forever due to unfair scheduling
+//   or resource never becoming available
+//
+// -------------------------------------------------------------
+// WHY try_lock / timed_mutex HELP
+// -------------------------------------------------------------
+//
+// Using try_lock():
+// - Thread does NOT block
+// - Thread can do other work
+//
+// Using timed_mutex:
+// - Thread waits only for LIMITED time
+// - Prevents infinite blocking
+//
+// -------------------------------------------------------------
+// INTERVIEW ONE-LINER
+// -------------------------------------------------------------
+//
+// "Infinite blocking can lead to starvation when a thread
+// is permanently denied access to a shared resource."
+// =============================================================
+```
+
+### ⭐ Ultra-short interview answer
+
+> **Yes — infinite blocking can cause starvation when a thread waits forever for a resource that never becomes available.**
+
+
+
+## 📊 **Starvation vs Deadlock vs Livelock (Comparison Table)**
+
+| Aspect         | **Deadlock**                        | **Starvation**                      | **Livelock**                              |
+| -------------- | ----------------------------------- | ----------------------------------- | ----------------------------------------- |
+| Definition     | Threads wait forever for each other | Thread waits forever for a resource | Threads keep running but make no progress |
+| Thread State   | Blocked                             | Blocked or Ready                    | Running                                   |
+| CPU Usage      | ❌ No CPU usage                      | ❌ Low or none                       | ✅ High CPU usage                          |
+| Progress       | ❌ No                                | ❌ No                                | ❌ No                                      |
+| Cause          | Circular wait for resources         | Unfair scheduling or priority       | Overreaction to each other                |
+| Example        | T1 waits for T2, T2 waits for T1    | Low-priority thread never scheduled | Threads repeatedly retry and yield        |
+| Detectability  | Easier                              | Harder                              | Hard                                      |
+| OS Involvement | Usually resource-level              | Scheduler-level                     | Application logic                         |
+| Solution       | Lock ordering, std::lock            | Fair scheduling, aging              | Backoff, randomness                       |
+
+---
+
+## 🧠 **Interview-Ready Explanation in Comment Format**
+
+```cpp
+// =============================================================
+// DEADLOCK vs STARVATION vs LIVELOCK
+// =============================================================
+
+// -------------------------------------------------------------
+// DEADLOCK
+// -------------------------------------------------------------
+//
+// Definition:
+// Two or more threads are BLOCKED forever,
+// each waiting for resources held by the others.
+//
+// Characteristics:
+// - Threads do NOT run
+// - No CPU usage
+// - System makes NO progress
+//
+// Example:
+// Thread T1 holds mutex A, waits for mutex B
+// Thread T2 holds mutex B, waits for mutex A
+//
+// Result:
+// Circular wait -> DEADLOCK
+//
+// -------------------------------------------------------------
+
+
+// -------------------------------------------------------------
+// STARVATION
+// -------------------------------------------------------------
+//
+// Definition:
+// A thread waits indefinitely because it never gets
+// access to required CPU time or resource.
+//
+// Characteristics:
+// - Thread may be READY but never scheduled
+// - Can be caused by priority scheduling
+// - Thread is ignored, not blocked by circular wait
+//
+// Example:
+// High-priority threads always acquire the mutex,
+// low-priority thread never gets a chance.
+//
+// Result:
+// STARVATION
+//
+// -------------------------------------------------------------
+
+
+// -------------------------------------------------------------
+// LIVELOCK
+// -------------------------------------------------------------
+//
+// Definition:
+// Threads are NOT blocked and keep executing,
+// but they continuously respond to each other
+// and make NO actual progress.
+//
+// Characteristics:
+// - Threads are ACTIVE
+// - High CPU usage
+// - No forward progress
+//
+// Example:
+// Thread A releases lock to be polite
+// Thread B does the same
+// Both keep retrying forever
+//
+// Result:
+// LIVELOCK
+//
+// -------------------------------------------------------------
+
+
+// =============================================================
+// HOW OS SCHEDULERS REDUCE STARVATION
+// =============================================================
+
+// -------------------------------------------------------------
+// 1. PRIORITY AGING
+// -------------------------------------------------------------
+//
+// Gradually increases priority of waiting threads
+// so they eventually get CPU time.
+//
+// Prevents low-priority threads from starving.
+
+
+// -------------------------------------------------------------
+// 2. TIME SLICING (Round Robin Scheduling)
+// -------------------------------------------------------------
+//
+// Each thread gets a fixed CPU time slice.
+// Ensures fairness among threads.
+
+
+// -------------------------------------------------------------
+// 3. FAIR LOCKS / QUEUED MUTEXES
+// -------------------------------------------------------------
+//
+// Threads acquire locks in FIFO order.
+// Prevents one thread from monopolizing a resource.
+
+
+// -------------------------------------------------------------
+// 4. PREEMPTIVE SCHEDULING
+// -------------------------------------------------------------
+//
+// OS can interrupt a running thread
+// and schedule another waiting thread.
+
+
+// -------------------------------------------------------------
+// INTERVIEW ONE-LINERS
+// -------------------------------------------------------------
+//
+// Deadlock:
+// "Threads wait forever for each other."
+//
+// Starvation:
+// "A thread waits forever because it never gets scheduled."
+//
+// Livelock:
+// "Threads keep running but make no progress."
+//
+// Scheduler role:
+// "OS schedulers prevent starvation using aging,
+// fairness, and preemption."
+// =============================================================
+```
+
+---
+
+## ⭐ **Ultra-Short Interview Summary**
+
+> **Deadlock blocks threads, starvation ignores threads, and livelock keeps threads busy without progress.
+> OS schedulers reduce starvation using aging, fairness, and time slicing.**
+
+---
+
+
+ // =============================================================
+// RACE CONDITION (C++ / Multithreading)
+// =============================================================
+//
+// A race condition occurs when TWO or MORE threads:
+//
+// 1. Access the SAME shared resource (variable, memory, file, etc.)
+// 2. At least ONE thread MODIFIES the shared resource
+// 3. Access happens WITHOUT proper synchronization
+//
+// As a result:
+// - The final output DEPENDS on thread execution order
+// - Execution order is NOT deterministic
+// - Program produces UNPREDICTABLE or INCORRECT results
+//
+// -------------------------------------------------------------
+// SIMPLE EXAMPLE
+// -------------------------------------------------------------
+//
+// Shared variable:
+//     int counter = 0;
+//
+// Thread 1:
+//     counter++
+//
+// Thread 2:
+//     counter++
+//
+// Expected result:
+//     counter = 2
+//
+// Possible actual result:
+//     counter = 1   (due to race condition)
+//
+// Reason:
+// Increment operation is NOT atomic:
+//   1. Load value
+//   2. Increment
+//   3. Store value
+//
+// Threads may interleave these steps.
+// -------------------------------------------------------------
+
+
+// -------------------------------------------------------------
+// IMPORTANT INTERVIEW CLARIFICATIONS
+// -------------------------------------------------------------
+//
+// • If multiple threads ONLY READ shared data:
+//     -> NO race condition
+//
+// • If at least one thread WRITES shared data:
+//     -> Race condition is POSSIBLE
+//
+// • Race condition is a LOGICAL error
+// • It may NOT appear every time
+// • Hard to debug and reproduce
+//
+// -------------------------------------------------------------
+
+
+// -------------------------------------------------------------
+// HOW TO PREVENT RACE CONDITION
+// -------------------------------------------------------------
+//
+// • Use mutex / lock_guard / scoped_lock
+// • Use atomic variables
+// • Protect critical sections
+// • Ensure proper synchronization
+//
+// Example:
+//     std::mutex m;
+//     m.lock();
+//     counter++;
+//     m.unlock();
+//
+// -------------------------------------------------------------
+
+
+// -------------------------------------------------------------
+// INTERVIEW ONE-LINER
+// -------------------------------------------------------------
+//
+// "A race condition happens when multiple threads access shared
+// data concurrently and the result depends on execution timing."
+// =============================================================
