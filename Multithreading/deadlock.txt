@@ -1,0 +1,123 @@
+// =============================================================
+// FOUR NECESSARY CONDITIONS FOR DEADLOCK (INTERVIEW MUST-KNOW)
+// =============================================================
+//
+// A deadlock can occur ONLY IF ALL FOUR conditions
+// below are true at the same time.
+//
+// If even ONE condition is broken, deadlock cannot happen.
+//
+// -------------------------------------------------------------
+// 1. MUTUAL EXCLUSION
+// -------------------------------------------------------------
+//
+// Definition:
+// A resource can be owned by ONLY ONE thread at a time.
+//
+// In mutex terms:
+// - A mutex allows only one thread to lock it
+// - Other threads must wait
+//
+// Example:
+//   std::mutex m;
+//   m.lock();   // Thread 1 owns the mutex
+//
+// Why necessary for deadlock:
+// - If multiple threads could access the resource simultaneously,
+//   there would be no waiting and hence no deadlock.
+//
+// Real-life analogy:
+// - A single-key bathroom
+//
+// -------------------------------------------------------------
+// 2. HOLD AND WAIT
+// -------------------------------------------------------------
+//
+// Definition:
+// A thread HOLDS at least one resource
+// and WAITS to acquire another resource.
+//
+// In code:
+// - Thread locks m1
+// - Then tries to lock m2 without releasing m1
+//
+// Example:
+//   m1.lock();   // holding m1
+//   m2.lock();   // waiting for m2
+//
+// Why necessary for deadlock:
+// - If threads released resources before waiting,
+//   circular waiting would never form.
+//
+// How to prevent:
+// - Lock all required resources at once
+// - Or release locks before acquiring new ones
+//
+// -------------------------------------------------------------
+// 3. NO PREEMPTION
+// -------------------------------------------------------------
+//
+// Definition:
+// A resource cannot be forcibly taken away
+// from a thread holding it.
+//
+// In mutex terms:
+// - Only the owning thread can unlock the mutex
+// - OS cannot steal it from another thread
+//
+// Example:
+//   Thread 1 locks m1
+//   Thread 2 CANNOT force unlock m1
+//
+// Why necessary for deadlock:
+// - If the OS could preempt locks, deadlock would be impossible
+//
+// Real-world analogy:
+// - You must return the bathroom key yourself;
+//   it cannot be taken forcibly
+//
+// -------------------------------------------------------------
+// 4. CIRCULAR WAIT
+// -------------------------------------------------------------
+//
+// Definition:
+// A circular chain of threads exists,
+// where each thread waits for a resource
+// held by the next thread in the cycle.
+//
+// Example:
+//   Thread 1 holds m1, waits for m2
+//   Thread 2 holds m2, waits for m1
+//
+// Circular wait:
+//   Thread 1 → Thread 2 → Thread 1
+//
+// Why necessary for deadlock:
+// - Without a cycle, at least one thread can proceed
+//
+// How to prevent:
+// - Always acquire locks in a GLOBAL ORDER
+// - Use std::lock or std::scoped_lock
+//
+// -------------------------------------------------------------
+// SUMMARY
+// -------------------------------------------------------------
+//
+// Deadlock occurs IF AND ONLY IF:
+//
+// ✔ Mutual Exclusion
+// ✔ Hold and Wait
+// ✔ No Preemption
+// ✔ Circular Wait
+//
+// Breaking ANY ONE of these conditions
+// guarantees DEADLOCK-FREE code.
+//
+// -------------------------------------------------------------
+// INTERVIEW ONE-LINER
+// -------------------------------------------------------------
+//
+// "Deadlock occurs when threads mutually exclude resources,
+// hold and wait for others, cannot be preempted,
+// and form a circular dependency."
+// =============================================================
