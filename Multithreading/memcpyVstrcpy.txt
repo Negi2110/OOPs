@@ -1,0 +1,282 @@
+Below is a **clear, interview-focused explanation** of **`memcpy` and `strcpy`**, written in **comment style**, with **differences, use cases, pitfalls, and interview one-liners**.
+
+---
+
+```cpp
+// =============================================================
+// TOPIC: memcpy vs strcpy (Interview Perspective)
+// =============================================================
+
+// -------------------------------------------------------------
+// 1. memcpy()
+// -------------------------------------------------------------
+//
+// memcpy() is used to copy RAW MEMORY (byte-by-byte) from one
+// memory location to another.
+//
+// SYNTAX:
+// void* memcpy(void* dest, const void* src, size_t n);
+//
+// - Copies exactly 'n' BYTES
+// - Does NOT care about data type
+// - Does NOT check for null-termination
+// - Works for any binary data (int, struct, array, etc.)
+//
+// Example:
+//
+int a[3] = {1, 2, 3};
+int b[3];
+memcpy(b, a, sizeof(a)); // copies 12 bytes
+//
+// Use cases:
+// - Copying arrays of POD types
+// - Copying structures
+// - Fast memory operations
+//
+// IMPORTANT:
+// - If memory overlaps -> UNDEFINED BEHAVIOR
+//   (use memmove instead)
+//
+// -------------------------------------------------------------
+// 2. strcpy()
+// -------------------------------------------------------------
+//
+// strcpy() is used to copy C-STRINGS only.
+//
+// SYNTAX:
+// char* strcpy(char* dest, const char* src);
+//
+// - Copies characters UNTIL '\0' is encountered
+// - Automatically copies null terminator
+// - Works ONLY for null-terminated strings
+//
+// Example:
+//
+char src[] = "Hello";
+char dest[10];
+strcpy(dest, src);
+//
+// Use cases:
+// - Copying C-style strings
+//
+// DANGER:
+// - No bounds checking
+// - Buffer overflow possible
+//
+// -------------------------------------------------------------
+// 3. KEY DIFFERENCES (Very Important for Interviews)
+// -------------------------------------------------------------
+
+// memcpy:
+// - Copies FIXED number of bytes
+// - Used for raw memory
+// - Faster, low-level
+// - Does NOT append '\0'
+//
+// strcpy:
+// - Copies until NULL character '\0'
+// - Used ONLY for strings
+// - Unsafe if destination is small
+// - Automatically null-terminates
+
+// -------------------------------------------------------------
+// 4. WHAT memcpy DOES NOT DO (Common Interview Trap)
+// -------------------------------------------------------------
+//
+// memcpy does NOT:
+// - Check string length
+// - Stop at '\0'
+// - Guarantee safety
+//
+// Example of BUG:
+//
+char s1[] = "Hello";
+char s2[3];
+memcpy(s2, s1, 5); // ❌ buffer overflow
+//
+// -------------------------------------------------------------
+// 5. Safer Alternatives (Interview Bonus)
+// -------------------------------------------------------------
+//
+// Instead of strcpy():
+// - strncpy()  (still risky)
+// - strlcpy()  (not standard)
+// - std::string (BEST in C++)
+//
+// Instead of memcpy():
+// - memmove() (if overlap possible)
+//
+// -------------------------------------------------------------
+// 6. INTERVIEW ONE-LINERS
+// -------------------------------------------------------------
+
+// Q: Difference between memcpy and strcpy?
+// A: memcpy copies a fixed number of bytes, strcpy copies until '\0'.
+
+// Q: Why is strcpy unsafe?
+// A: It does not check destination buffer size.
+
+// Q: Can memcpy be used for strings?
+// A: Yes, but it will NOT append '\0' automatically.
+
+// Q: Which is faster?
+// A: memcpy is generally faster because it works on raw memory.
+
+// -------------------------------------------------------------
+// 7. WHEN TO USE WHAT (Final Summary)
+// -------------------------------------------------------------
+
+// Use memcpy:
+// - For binary data
+// - Arrays, structs, buffers
+// - Performance-critical code
+//
+// Use strcpy:
+// - Only for C-style strings
+// - Only when buffer size is guaranteed
+//
+// Prefer:
+// - std::string in C++
+// - std::copy / std::copy_n for typed data
+//
+// =============================================================
+```
+
+---
+
+### ⭐ **Ultimate Interview Summary**
+
+> **`memcpy` copies raw memory byte-by-byte, while `strcpy` copies null-terminated strings until `'\0'`. `strcpy` is unsafe due to lack of bounds checking, and `std::string` is preferred in modern C++.**
+
+
+Here are **clear, minimal, WORKING examples** of both **`memcpy`** and **`strcpy`**, written in a way that is **easy to understand and interview-ready**.
+
+---
+
+## ✅ **Example 1: Working example of `memcpy()`**
+
+### 👉 Copying an integer array (RAW MEMORY)
+
+```cpp
+#include <iostream>
+#include <cstring>   // for memcpy
+using namespace std;
+
+int main() {
+    int src[3] = {10, 20, 30};
+    int dest[3];
+
+    // Copy 3 integers (3 * sizeof(int) bytes)
+    memcpy(dest, src, sizeof(src));
+
+    cout << "After memcpy, dest array contains:\n";
+    for (int i = 0; i < 3; i++) {
+        cout << dest[i] << " ";
+    }
+
+    return 0;
+}
+```
+
+### 🔍 Explanation (Interview style)
+
+```cpp
+// memcpy copies raw bytes from src to dest
+// It does NOT care about data type
+// It copies exactly sizeof(src) bytes
+// Used for arrays, structs, binary data
+```
+
+### ✔ Output
+
+```
+10 20 30
+```
+
+---
+
+## ✅ **Example 2: Working example of `strcpy()`**
+
+### 👉 Copying a C-style string
+
+```cpp
+#include <iostream>
+#include <cstring>   // for strcpy
+using namespace std;
+
+int main() {
+    char src[] = "Hello";
+    char dest[10];   // destination must be large enough
+
+    strcpy(dest, src);
+
+    cout << "After strcpy, dest contains: " << dest << endl;
+
+    return 0;
+}
+```
+
+### 🔍 Explanation (Interview style)
+
+```cpp
+// strcpy copies characters one by one
+// Stops when it finds '\0'
+// Automatically copies the null terminator
+// Works ONLY for C-style strings
+```
+
+### ✔ Output
+
+```
+Hello
+```
+
+---
+
+## ⚠️ **IMPORTANT DIFFERENCE DEMO (Very Common Interview Trap)**
+
+### ❌ Using `memcpy` for string (WRONG)
+
+```cpp
+char src[] = "Hello";
+char dest[10];
+
+memcpy(dest, src, 5);   // copies ONLY 5 bytes
+cout << dest;           // ❌ Undefined behavior
+```
+
+❌ No `'\0'` → string may print garbage.
+
+---
+
+### ✅ Correct way with `memcpy`
+
+```cpp
+memcpy(dest, src, strlen(src) + 1); // include '\0'
+```
+
+---
+
+## 🧠 **Side-by-Side Summary (Interview Gold)**
+
+```cpp
+// memcpy:
+// - Copies FIXED number of bytes
+// - Used for raw memory (arrays, structs)
+// - Does NOT add '\0'
+
+// strcpy:
+// - Copies until '\0'
+// - Used ONLY for strings
+// - Automatically null-terminates
+```
+
+---
+
+## ⭐ **One-Line Interview Answer**
+
+> “`memcpy` copies raw memory byte-by-byte, while `strcpy` copies C-strings until the null terminator.”
+
+---
+
+
