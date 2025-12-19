@@ -1,0 +1,98 @@
+// =====================================================
+// TOPIC: Sleep vs Wait (Interview Perspective)
+// =====================================================
+//
+// -----------------------------------------------------
+// SLEEP
+// -----------------------------------------------------
+//
+// Meaning:
+// "I am done with my current time slice.
+//  Do NOT schedule me again until the given time expires."
+//
+// Key Characteristics:
+// 1. Sleep pauses the CURRENT THREAD for a FIXED TIME.
+// 2. Sleep does NOT depend on any condition.
+// 3. Sleep DOES NOT release any mutex automatically.
+// 4. The thread wakes up ONLY after the timeout expires.
+// 5. OS scheduler does not wake the thread early.
+//
+// IMPORTANT:
+// - If the thread holds a mutex and calls sleep(),
+//   it CONTINUES to HOLD the mutex while sleeping.
+// - This can BLOCK other threads unnecessarily.
+//
+// Typical usage:
+// - Delays
+// - Timers
+// - Simulating work
+//
+// Example:
+// std::this_thread::sleep_for(std::chrono::seconds(1));
+//
+// -----------------------------------------------------
+// WAIT (condition_variable::wait)
+// -----------------------------------------------------
+//
+// Meaning:
+// "I cannot continue until a CONDITION becomes true.
+//  Put me to sleep and wake me ONLY when notified(calls notify and notifyAll)"
+//
+// Key Characteristics:
+// 1. wait() ALWAYS works with a condition_variable.
+// 2. wait() ATOMICALLY releases the mutex and blocks.
+// 3. Thread sleeps UNTIL notified (notify_one / notify_all).
+// 4. When notified, mutex is re-acquired automatically.
+// 5. Must ALWAYS be used with a predicate.
+//
+// IMPORTANT:
+// - wait() releases the mutex while waiting.
+// - This allows other threads to modify shared data.
+// - Avoids busy waiting and wasted CPU cycles.
+//
+// Typical usage:
+// - Producer–Consumer problem
+// - Thread coordination
+// - Waiting for state changes
+//
+// Example:
+// cv.wait(lock, [] { return condition == true; });
+//
+// -----------------------------------------------------
+// KEY DIFFERENCES (Interview Gold)
+// -----------------------------------------------------
+//
+// Sleep:
+// - Time-based waiting
+// - Does NOT release mutex
+// - No coordination between threads
+// - Can cause starvation or poor performance
+//
+// Wait:
+// - Condition-based waiting
+// - Releases mutex automatically
+// - Thread-safe coordination
+// - Efficient and scalable
+//
+// -----------------------------------------------------
+// COMMON INTERVIEW MISTAKES
+// -----------------------------------------------------
+//
+// ❌ Using sleep() to wait for a condition
+// ❌ Holding mutex while sleeping
+// ❌ Replacing condition_variable with sleep loops
+//
+// -----------------------------------------------------
+// ONE-LINE INTERVIEW ANSWER
+// -----------------------------------------------------
+//
+// "sleep() pauses a thread for a fixed time and keeps locks,
+//  while wait() pauses a thread until a condition is met
+//  and releases the mutex during waiting."
+| Aspect              | Sleep  | Wait            |
+| ------------------- | ------ | --------------- |
+| Based on            | Time   | Condition       |
+| Releases mutex      | ❌ No   | ✅ Yes           |
+| Thread coordination | ❌ No   | ✅ Yes           |
+| CPU efficient       | ❌ Poor | ✅ Excellent     |
+| Used for            | Delay  | Synchronization |
