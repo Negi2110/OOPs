@@ -1,0 +1,67 @@
+A program utilises four types of memory
+-----------------------------------------------------------
+// 1. CODE AREA (Text Segment)
+// ------------------------------------------------------------
+// - Stores the compiled machine instructions of the program.
+// - This memory is usually read-only for safety and security.
+// - Multiple processes can share the same code segment to save memory.
+// - Exists for the entire lifetime of the program.
+// - Example: compiled instructions of main(), functions, etc.
+
+// ------------------------------------------------------------
+// 2. GLOBAL AREA (Data Segment)
+// ------------------------------------------------------------
+// - Stores global variables and static variables.
+// - Memory is allocated at program start and released at program end.
+// - Divided into:
+//   a) Initialized data segment (e.g., int x = 5)
+//   b) Uninitialized data / BSS segment (e.g., int y)
+// - Useful interview point: lifetime = entire program, scope = global/static.
+// - Example:
+//     int counter = 0;   // initialized global
+//     static int max;    // uninitialized static
+
+// ------------------------------------------------------------
+// 3. HEAP
+// ------------------------------------------------------------
+// - Used for dynamic memory allocation at runtime.
+// - Memory size is flexible (can grow/shrink).
+// - Allocation is explicit in C/C++ (malloc/new).
+// - Deallocation is also explicit; forgetting leads to memory leaks.
+// - In managed languages (Java, Python, C#), handled by garbage collector.
+// - Slower than stack but more flexible.
+// - Interview tip: Heap memory survives function calls.
+// - Example:
+//     int* arr = malloc(10 * sizeof(int));
+
+// ------------------------------------------------------------
+// 4. STACK
+// ------------------------------------------------------------
+// - Stores function call frames (activation records).
+// - Contains:
+//   - Function parameters
+//   - Local variables
+//   - Return addresses
+// - Managed automatically by the system.
+// - Memory is freed as soon as the function returns.
+// - Very fast but limited in size.
+// - Interview tip: Stack overflow occurs with deep recursion.
+// - Example:
+//     void foo(int x) {
+//         int y = 5; // allocated on stack
+//     }
+
+// ------------------------------------------------------------
+// QUICK INTERVIEW COMPARISON
+// ------------------------------------------------------------
+// Code Area   -> Instructions, read-only, entire program lifetime
+// Global Area -> Global/static variables, entire program lifetime
+// Heap        -> Dynamic memory, manual/GC managed, flexible lifetime
+// Stack       -> Local variables, function scope, automatic management
+
+// Common interview questions:
+// - Difference between stack and heap?
+// - What causes stack overflow?
+// - What is memory leak?
+// - Where are static variables stored?
+// - Why is heap slower than stack?

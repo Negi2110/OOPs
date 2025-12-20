@@ -1,0 +1,117 @@
+## What does **scope** mean here?
+
+**Scope** refers to **where in the program a variable is accessible (visible and usable)**.
+
+In simple terms:
+
+> **Scope = where you are allowed to use the variable in code**
+
+---
+
+## Scope vs Lifetime (VERY IMPORTANT)
+
+Interviewers often test this distinction:
+
+| Term         | Meaning                                          |
+| ------------ | ------------------------------------------------ |
+| **Scope**    | *Where* the variable can be accessed in the code |
+| **Lifetime** | *How long* the variable exists in memory         |
+
+They are related but **not the same**.
+
+---
+
+## Scope in the context of the STACK
+
+When we say:
+
+> “Memory allocated on the stack stays in scope as long as it is on the stack”
+
+We mean:
+
+* A **local (stack) variable**
+
+  * Is **accessible only inside the block/function** where it is declared
+  * Stops being accessible once execution leaves that block
+
+---
+
+## Example 1: Function scope (most common)
+
+```c
+void foo() {
+    int x = 10;   // x is in scope here
+    printf("%d", x);
+}                // x goes out of scope here
+```
+
+* **Scope of `x`** → inside `foo()`
+* **Lifetime of `x`** → from function entry to function exit
+* After `foo()` returns:
+
+  * `x` is **out of scope**
+  * Stack memory for `x` is **destroyed**
+
+---
+
+## Example 2: Block scope
+
+```c
+void bar() {
+    if (true) {
+        int y = 5;   // y is in scope here
+    }               // y goes out of scope here
+}
+```
+
+* **Scope of `y`** → inside the `if` block
+* Stack memory is freed when the block ends
+
+---
+
+## Example 3: Scope vs lifetime trick question
+
+```c
+int* bad() {
+    int x = 10;
+    return &x;   // ❌
+}
+```
+
+* `x` is:
+
+  * **In scope** only inside `bad()`
+  * **Destroyed** when `bad()` returns
+* Returning its address gives a **dangling pointer**
+* Classic interview pitfall 🚩
+
+---
+
+## Compare with GLOBAL / STATIC variables
+
+```c
+int g = 10;   // global variable
+```
+
+* **Scope** → entire file (or program)
+* **Lifetime** → entire program
+* Stored in **global/data segment**, not stack
+
+```c
+void foo() {
+    static int s = 0;
+}
+```
+
+* **Scope** → inside `foo()` only
+* **Lifetime** → entire program
+* Stored in **data segment**, not stack
+
+---
+
+## One-line interview answer (use this!)
+
+> **Scope means the region of the program where a variable is accessible.
+> For stack variables, scope is limited to the function or block, and once execution leaves that scope, the variable becomes inaccessible and its stack memory is reclaimed.**
+
+------------------------------------------------------------------------

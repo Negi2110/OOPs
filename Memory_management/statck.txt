@@ -1,0 +1,380 @@
+// THE STACK
+// Interview definition:
+// The stack is a LIFO (Last In, First Out) data structure used for
+// managing function calls and local (automatic) variables.
+
+// ------------------------------------------------------------
+// STACK OPERATIONS (Conceptual Data Structure)
+// ------------------------------------------------------------
+// 1. Push  -> Add a new item to the top of the stack
+// 2. Peek  -> Look at the last item added without removing it
+// 3. Pop   -> Remove the last item added
+// Interview note: These operations are O(1).
+
+// ------------------------------------------------------------
+// STACK MEMORY IN PROGRAM EXECUTION
+// ------------------------------------------------------------
+// - Each function call creates a stack frame (activation record).
+// - A stack frame contains:
+//   - Function parameters
+//   - Local variables
+//   - Return address
+//   - Saved registers (architecture dependent)
+
+// ------------------------------------------------------------
+// VARIABLE ALLOCATION
+// ------------------------------------------------------------
+// - Locally declared variables (non-static) are allocated on the stack.
+// - Allocation happens automatically when the function is called.
+// - Deallocation happens automatically when the function returns.
+
+// IMPORTANT INTERVIEW CORRECTION:
+// - "Statically declared variables" do NOT live on the stack.
+// - Static variables live in the GLOBAL / DATA segment.
+// - Correct term here is: "Automatically allocated (local) variables".
+
+// ------------------------------------------------------------
+// MEMORY MANAGEMENT
+// ------------------------------------------------------------
+// - Stack memory is automatically managed by the system.
+// - No need for malloc/free or new/delete.
+// - This makes stack allocation very fast and safe.
+
+// ------------------------------------------------------------
+// SCOPE & LIFETIME
+// ------------------------------------------------------------
+// - Scope: limited to the block or function.
+// - Lifetime: until the function exits.
+// - Once out of scope, stack memory is immediately reclaimed.
+
+// ------------------------------------------------------------
+// LIMITATIONS & INTERVIEW TRAPS
+// ------------------------------------------------------------
+// - Stack size is limited.
+// - Deep recursion or large local variables can cause stack overflow.
+// - Stack memory cannot be resized dynamically.
+// - Stack is faster than heap due to simple pointer movement.
+
+
+// FUNCTION CALL & STACK EXECUTION (INTERVIEW EXPLANATION)
+// This explains what happens on the stack when a function is called.
+
+// ------------------------------------------------------------
+// STEP 1: RETURN ADDRESS IS PUSHED
+// ------------------------------------------------------------
+// - When a function is called, the CPU pushes the return address
+//   (the instruction after the function call) onto the stack.
+// - This allows the CPU to know where to continue execution
+//   once the function finishes.
+// - Interview keyword: "return address"
+
+// ------------------------------------------------------------
+// STEP 2: STACK FRAME IS CREATED
+// ------------------------------------------------------------
+// - Space is reserved on the stack for the function’s stack frame.
+// - The stack frame represents all data local to that function.
+// - A special pointer (frame pointer / base pointer) marks the
+//   start of this frame.
+// - Interview correction:
+//   Return value is NOT always stored on the stack.
+//   Often returned via registers (architecture dependent).
+
+// ------------------------------------------------------------
+// STEP 3: CONTROL JUMPS TO FUNCTION CODE
+// ------------------------------------------------------------
+// - CPU jumps to the function’s instruction address.
+// - Stack pointer (SP) and frame pointer (FP/BP) are updated.
+// - Everything added after this point is local to the function.
+
+// ------------------------------------------------------------
+// STEP 4: FUNCTION ARGUMENTS ARE PLACED
+// ------------------------------------------------------------
+// - Function parameters are placed on the stack
+//   (or in registers, depending on calling convention).
+// - In this example: Add(5,4)
+//   a = 5, b = 4
+// - Interview keyword: "calling convention"
+
+// ------------------------------------------------------------
+// STEP 5: LOCAL VARIABLES ARE ALLOCATED
+// ------------------------------------------------------------
+// - Local variables are pushed onto the stack as declared.
+// - In Add():
+//     int result;
+// - These variables exist only while the function executes.
+
+// ------------------------------------------------------------
+// FUNCTION EXECUTION & RETURN
+// ------------------------------------------------------------
+// - Function executes instructions.
+// - Result is calculated (a + b).
+// - Return value is placed in return register (or stack).
+// - Stack frame is destroyed.
+// - Stack pointer is restored.
+// - CPU jumps back using the return address.
+
+// ------------------------------------------------------------
+// STACK DIAGRAM WALKTHROUGH (CODE EXAMPLE)
+// ------------------------------------------------------------
+// int Add(int a, int b) {
+//     int result = a + b;
+//     return result;
+// }
+//
+// int main() {
+//     int temp;
+//     temp = Add(5,4);
+//     cout << temp;
+// }
+//
+// main() stack frame exists first.
+// When Add() is called:
+// - return address is pushed
+// - new stack frame is created
+// - a = 5, b = 4 are added
+// - result is added
+// After return:
+// - Add() stack frame is removed
+// - temp receives returned value
+// - execution continues in main()
+
+// FUNCTION RETURN & STACK CLEANUP (INTERVIEW EXPLANATION)
+// This describes what happens on the stack when a function finishes execution.
+
+// ------------------------------------------------------------
+// STEP 1: RETURN VALUE HANDLING
+// ------------------------------------------------------------
+// - The function computes its return value.
+// - Depending on the calling convention:
+//   - The return value is placed in a CPU register (most common), OR
+//   - Temporarily placed in a reserved stack location.
+// - Interview correction:
+//   Return values are NOT always stored on the stack.
+
+// ------------------------------------------------------------
+// STEP 2: STACK FRAME IS DESTROYED
+// ------------------------------------------------------------
+// - Everything allocated after the stack frame pointer is removed.
+// - This includes:
+//   - Local variables
+//   - Function parameters
+// - Stack pointer is restored to its previous position.
+// - This effectively frees all function-local memory.
+
+// ------------------------------------------------------------
+// STEP 3: VALUE IS ASSIGNED TO CALLER
+// ------------------------------------------------------------
+// - The returned value is assigned to the receiving variable
+//   in the calling function (if one exists).
+// - Example:
+//     temp = Add(5,4);
+// - If the return value is not assigned to anything,
+//   the value is simply discarded.
+
+// ------------------------------------------------------------
+// STEP 4: RETURN ADDRESS IS USED
+// ------------------------------------------------------------
+// - The return address is popped from the stack.
+// - CPU jumps back to the instruction immediately after
+//   the function call.
+// - Execution resumes in the calling function.
+
+// ------------------------------------------------------------
+// SUMMARY FOR INTERVIEWS
+// ------------------------------------------------------------
+// - Stack cleanup is automatic.
+// - Local variables do NOT survive after function returns.
+// - Stack frames are pushed on function call and popped on return.
+// - Return address ensures correct execution flow.
+
+
+// STACK OVERFLOW (INTERVIEW EXPLANATION)
+
+// ------------------------------------------------------------
+// WHAT IS STACK OVERFLOW?
+// ------------------------------------------------------------
+// - The stack has a fixed, limited size.
+// - Stack overflow occurs when the program tries to use
+//   more stack memory than is available.
+// - When the stack limit is exceeded, memory corruption
+//   or a program crash typically occurs.
+
+// IMPORTANT INTERVIEW CLARIFICATION:
+// - Modern operating systems usually prevent the stack from
+//   overwriting other memory regions.
+// - Instead of "overflowing into other sections",
+//   the program typically crashes with a stack overflow error.
+
+// ------------------------------------------------------------
+// WHY STACK OVERFLOW HAPPENS
+// ------------------------------------------------------------
+// 1. Too many nested function calls
+//    - Especially due to deep or infinite recursion.
+//    - Example: A -> B -> C -> D -> ... without a base case.
+//
+// 2. Large local variables on the stack
+//    - Example: large arrays declared inside a function.
+//    - int arr[1_000_000];  // dangerous on stack
+//
+// 3. Combination of recursion + large stack frames
+//    - Each function call consumes stack space.
+
+// ------------------------------------------------------------
+// WHAT HAPPENS INTERNALLY
+// ------------------------------------------------------------
+// - Each function call pushes a new stack frame.
+// - Stack pointer moves toward the stack limit.
+// - Once the limit is reached:
+//   - OS raises a stack overflow exception OR
+//   - Program crashes (segmentation fault / runtime error).
+
+// ------------------------------------------------------------
+// INTERVIEW TRAPS & CORRECTIONS
+// ------------------------------------------------------------
+// ❌ "Stack overflow happens when stack spills into heap"
+// ✅ Correct: OS enforces stack limits; program crashes instead.
+//
+// ❌ "Allocating many variables always causes overflow"
+// ✅ Correct: Only large or excessive allocations cause it.
+//
+// ❌ "Heap allocation causes stack overflow"
+// ✅ Correct: Heap allocation does NOT consume stack space.
+
+// ------------------------------------------------------------
+// PREVENTION TECHNIQUES
+// ------------------------------------------------------------
+// - Avoid deep recursion; use iteration where possible.
+// - Ensure recursion has a proper base case.
+// - Avoid large local variables on the stack.
+// - Allocate large data structures on the heap instead.
+// - Increase stack size if necessary (platform dependent).
+// STACK: ADVANTAGES & DISADVANTAGES (INTERVIEW EXPLANATION)
+
+// ------------------------------------------------------------
+// ADVANTAGE 1: AUTOMATIC LIFETIME MANAGEMENT
+// ------------------------------------------------------------
+// - Memory allocated on the stack exists only while it is in scope.
+// - When a function returns, its stack frame is popped automatically.
+// - All local variables are destroyed without explicit deallocation.
+// - Interview keyword: "automatic memory management".
+
+// ------------------------------------------------------------
+// ADVANTAGE 2: COMPILE-TIME MEMORY KNOWLEDGE
+// ------------------------------------------------------------
+// - Stack memory size and layout are known at compile time.
+// - Variables can be accessed directly by name (no pointers needed).
+// - Results in very fast access compared to heap allocation.
+// - Interview keyword: "deterministic and efficient".
+
+// ------------------------------------------------------------
+// DISADVANTAGE 1: LIMITED SIZE
+// ------------------------------------------------------------
+// - The stack is relatively small compared to the heap.
+// - Excessive stack usage can lead to stack overflow.
+// - Stack size is usually fixed per thread.
+
+// ------------------------------------------------------------
+// DISADVANTAGE 2: NOT SUITABLE FOR LARGE OBJECTS
+// ------------------------------------------------------------
+// - Large arrays, structures, or classes should not be allocated
+//   on the stack.
+// - Example:
+//     int largeArray[1000000]; // bad practice on stack
+// - Such allocations should be done on the heap instead.
+
+// ------------------------------------------------------------
+// DISADVANTAGE 3: HEAVY RECURSION
+// ------------------------------------------------------------
+// - Each recursive call creates a new stack frame.
+// - Deep or infinite recursion can quickly exhaust stack space.
+// - Interview tip: recursion + large local variables is dangerous.
+
+// ------------------------------------------------------------
+// INTERVIEW SUMMARY (ONE-LINER)
+// ------------------------------------------------------------
+// - Stack is fast, automatic, and simple.
+// - But it is small, limited in lifetime, and unsuitable for
+//   large or dynamically sized data.
+
+// ------------------------------------------------------------
+// COMMON INTERVIEW QUESTIONS
+// ------------------------------------------------------------
+// Q: Why is stack memory faster than heap?
+// A: Because allocation/deallocation is simple pointer movement.
+//
+// Q: When should you avoid stack allocation?
+// A: For large objects or deep recursion.
+//
+// Q: Can stack memory be resized?
+// A: No, stack size is fixed (per thread).
+//
+// Q: What happens when stack memory goes out of scope?
+// A: It is automatically reclaimed.
+
+// ------------------------------------------------------------
+// COMMON INTERVIEW QUESTIONS
+// ------------------------------------------------------------
+// Q: What is the most common cause of stack overflow?
+// A: Infinite or deep recursion.
+//
+// Q: Why does recursion cause stack overflow?
+// A: Each recursive call consumes stack space.
+//
+// Q: How do you fix stack overflow due to recursion?
+// A: Use iteration or tail recursion optimization.
+//
+// Q: Does heap allocation affect stack size?
+// A: No, heap and stack are separate memory regions.
+//
+// Q: What error do you usually see?
+// A: Stack overflow exception or segmentation fault.
+
+// ------------------------------------------------------------
+// COMMON INTERVIEW QUESTIONS
+// ------------------------------------------------------------
+// Q: What happens to local variables after function returns?
+// A: They are destroyed when the stack frame is popped.
+//
+// Q: Is return value always stored on stack?
+// A: No, usually returned via registers.
+//
+// Q: Who manages stack memory?
+// A: The system/compiler automatically.
+//
+// Q: What happens if the return value is unused?
+// A: It is computed but discarded.
+
+// ------------------------------------------------------------
+// INTERVIEW TRAPS & COMMON QUESTIONS
+// ------------------------------------------------------------
+// Q: What is a stack frame?
+// A: A memory block storing function-specific data.
+//
+// Q: What is stored in a stack frame?
+// A: Parameters, local variables, return address, saved registers.
+//
+// Q: Is the return value always on the stack?
+// A: No, often returned via CPU registers.
+//
+// Q: What happens to stack memory after return?
+// A: It is automatically reclaimed.
+//
+// Q: What causes stack overflow?
+// A: Deep recursion or large local variables.
+
+// ------------------------------------------------------------
+// COMMON INTERVIEW QUESTIONS
+// ------------------------------------------------------------
+// Q: Why is stack faster than heap?
+// A: Because allocation/deallocation is just pointer movement.
+//
+// Q: What causes stack overflow?
+// A: Deep recursion or large local arrays.
+//
+// Q: Can static variables be on the stack?
+// A: No, they are stored in the data segment.
+//
+// Q: Does stack memory persist after function returns?
+// A: No, it is automatically freed.
+Scope means the region of the program where a variable is accessible.
+For stack variables, scope is limited to the function or block, and once execution leaves that scope, the variable becomes inaccessible and its stack memory is reclaimed.
