@@ -1,0 +1,78 @@
+#include <iostream>
+#include <new>      // Interview point: Required for set_new_handler
+#include <cstdlib>  // Interview point: Required for exit()
+using namespace std;
+
+/*
+ INTERVIEW PERSPECTIVE:
+ This function is a custom memory error handler.
+ C++ will automatically call this function when 'new' fails
+ to allocate memory.
+ 
+ RULES (often asked in interviews):
+ 1. Must return void
+ 2. Must take no parameters
+*/
+void MemoryErrorHandler() {
+
+    // INTERVIEW PERSPECTIVE:
+    // cerr is used instead of cout because this is an error message.
+    cerr << "You have run out of memory!" << endl;
+
+    // INTERVIEW PERSPECTIVE:
+    // When memory allocation fails, continuing execution is unsafe,
+    // so the program is terminated gracefully.
+    exit(1);
+}
+
+int main() {
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     set_new_handler() assigns the custom error handler
+     to the internal C++ new_handler pointer.
+     
+     After this line, if any 'new' operation fails,
+     MemoryErrorHandler() will be invoked automatically.
+    */
+    set_new_handler(MemoryErrorHandler);
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     This loop is only to demonstrate memory failure.
+     In real applications, allocation failure may happen
+     due to system limitations.
+    */
+    while (true) {
+        int* arr = new int[1000000000]; // Likely to fail
+    }
+
+    return 0;
+}
+```
+
+---
+
+### 🧠 How to Explain This Slide in an Interview (Side Explanation)
+
+* **`new_handler`** is an internal function pointer used by C++
+* It is invoked automatically when **dynamic memory allocation fails**
+* Developers can define a custom handler and register it using
+  **`set_new_handler()`**
+* The handler function:
+
+  * Returns `void`
+  * Takes no parameters
+* Common actions inside the handler:
+
+  * Log an error
+  * Release resources
+  * Terminate the program safely
+
+---
+
+### ✅ One-Line Interview Answer (Very Important)
+
+> *“`set_new_handler()` allows us to define a custom function that C++ automatically calls when `new` fails to allocate memory, enabling controlled and graceful error handling.”*
+
+I

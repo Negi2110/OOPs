@@ -1,0 +1,116 @@
+
+// =====================================================
+// TOPIC: Deleting Arrays of Pointers in C++
+// =====================================================
+//
+// Scenario:
+// ---------
+// We have an ARRAY of POINTERS, where:
+// - The array itself is allocated using new[]
+// - Each element of the array points to an object
+//   that is ALSO allocated using new
+//
+// This creates TWO LEVELS of dynamic memory:
+//
+// 1) Array of pointers        -> HEAP
+// 2) Individual objects       -> HEAP
+//
+// Both MUST be freed correctly.
+//
+// -----------------------------------------------------
+// Example Code Explained
+// -----------------------------------------------------
+
+class GameObject {
+    // class definition
+};
+
+// Step 1: Allocate array of pointers
+GameObject** objects = new GameObject*[10];
+//
+// Memory:
+// - `objects` pointer lives on STACK
+// - The array (10 pointers) lives on HEAP
+//
+
+// Step 2: Allocate individual objects
+for (int n = 0; n < 10; n++) {
+    objects[n] = new GameObject();
+}
+//
+// Memory:
+// - Each objects[n] points to a GameObject on HEAP
+// - Total allocations so far:
+//   * 1 array allocation (new[])
+//   * 10 object allocations (new)
+//
+// -----------------------------------------------------
+// CORRECT DELETION ORDER (VERY IMPORTANT)
+// -----------------------------------------------------
+
+// Step 3: Delete EACH object FIRST
+for (int n = 0; n < 10; n++) {
+    delete objects[n];
+}
+//
+// Why?
+// - Each objects[n] was allocated with `new`
+// - delete calls the destructor and frees memory
+//
+// If you skip this → MEMORY LEAK
+//
+
+// Step 4: Delete the array of pointers LAST
+delete[] objects;
+//
+// Why?
+// - objects was allocated with new[]
+// - delete[] frees the array itself
+//
+// -----------------------------------------------------
+// WHY THIS ORDER MATTERS (Interview Favorite)
+// -----------------------------------------------------
+//
+// ❌ Wrong Order:
+//
+// delete[] objects;      // array gone
+// delete objects[n];     // ❌ undefined behavior
+//
+// After deleting the array, you lose all pointers
+// to the objects → MEMORY LEAK + CRASH
+//
+// -----------------------------------------------------
+// SAFE PRACTICE
+// -----------------------------------------------------
+
+// After deletion, set pointers to nullptr
+objects = nullptr;
+//
+// Prevents dangling pointer usage
+//
+// -----------------------------------------------------
+// COMMON INTERVIEW MISTAKES
+// -----------------------------------------------------
+//
+// ❌ Using delete instead of delete[]
+// ❌ Deleting array before elements
+// ❌ Forgetting to delete individual objects
+// ❌ Double delete
+//
+// -----------------------------------------------------
+// ONE-LINE INTERVIEW ANSWER
+// -----------------------------------------------------
+//
+// "When deleting an array of pointers, first delete each
+// pointed object, then delete the pointer array using delete[]."
+```
+
+---
+
+### ⭐ Interview Tip (Modern C++)
+
+```cpp
+// Prefer smart pointers to avoid manual deletion
+std::vector<std::unique_ptr<GameObject>> objects;
+```
+

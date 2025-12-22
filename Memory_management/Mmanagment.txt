@@ -1,0 +1,252 @@
+// =====================================================
+// TOPIC: Memory Management in C++ (Interview Perspective)
+// =====================================================
+//
+// A running C++ program is divided into multiple
+// MEMORY SEGMENTS by the operating system.
+//
+// -----------------------------------------------------
+// 1️⃣ CODE SEGMENT (Text Segment)
+// -----------------------------------------------------
+//
+// - Stores the compiled machine instructions
+// - Read-only memory
+// - Same code is shared among multiple processes
+//
+// Example:
+// Functions, program logic, instructions
+//
+// Properties:
+// - Read-only
+// - Cannot be modified at runtime
+// - Loaded once
+//
+// -----------------------------------------------------
+// 2️⃣ GLOBAL / STATIC SEGMENT
+// -----------------------------------------------------
+//
+// - Stores global variables and static variables
+// - Exists for the entire lifetime of the program
+// - Memory allocated at program start
+//
+// Example:
+int globalVar = 10;
+static int staticVar = 20;
+//
+// Properties:
+// - Accessible throughout program
+// - Initialized before main()
+// - Destroyed after program ends
+//
+// -----------------------------------------------------
+// 3️⃣ HEAP SEGMENT
+// -----------------------------------------------------
+//
+// - Used for dynamic memory allocation
+// - Allocated using new / delete
+// - Lifetime controlled by programmer
+//
+// Example:
+int* p = new int(10);
+//
+// Properties:
+// - Large memory area
+// - Slower than stack
+// - Must be manually freed
+//
+// Common issues:
+// - Memory leaks
+// - Dangling pointers
+//
+// -----------------------------------------------------
+// 4️⃣ STACK SEGMENT
+// -----------------------------------------------------
+//
+// - Stores function parameters and local variables
+// - Automatically managed
+// - Memory allocated & deallocated on function calls
+//
+// Example:
+void func() {
+    int x = 5;   // stored on stack
+}
+//
+// Properties:
+// - Fast access
+// - Limited size
+// - LIFO (Last In First Out)
+//
+// -----------------------------------------------------
+// MEMORY LAYOUT (High → Low Address)
+// -----------------------------------------------------
+//
+// | Global / Static |
+// | Code Segment   |
+// | Heap            |   ← grows upward
+// | Stack           |   ← grows downward
+//
+// -----------------------------------------------------
+// INTERVIEW COMPARISON: STACK vs HEAP
+// -----------------------------------------------------
+//
+// Stack:
+// - Automatic memory management
+// - Faster
+// - Limited size
+// - Function scoped
+//
+// Heap:
+// - Manual memory management
+// - Slower
+// - Large size
+// - Global lifetime
+//
+// -----------------------------------------------------
+// ONE-LINE INTERVIEW ANSWER
+// -----------------------------------------------------
+//
+// "A C++ program uses stack for local variables,
+// heap for dynamic memory, global for static data,
+// and code segment for executable instructions."
+
+
+
+// =====================================================
+// TOPIC: Memory Management – Pointer & Heap Illustration
+// =====================================================
+//
+// The diagram explains how POINTERS live on the STACK
+// while the ACTUAL DATA they point to lives on the HEAP.
+//
+// -----------------------------------------------------
+// CODE SNIPPET EXPLAINED STEP-BY-STEP
+// -----------------------------------------------------
+
+// 1️⃣ Declare a pointer variable
+int* ptr;
+//
+// - `ptr` itself is a local variable
+// - It is stored on the STACK
+// - At this point, it holds a garbage address
+//
+
+// 2️⃣ Allocate memory on heap
+ptr = new int;
+//
+// - `new int` allocates memory on the HEAP
+// - Suppose heap address returned is: 0x3D3B38
+// - That address is stored inside `ptr` (on stack)
+//
+// Stack:
+//   ptr → 0x3D3B38
+//
+// Heap:
+//   [0x3D3B38] → uninitialized int
+//
+
+// 3️⃣ Assign value to heap memory
+*ptr = 7;
+//
+// - Dereferencing ptr writes value 7
+// - Value 7 is stored on HEAP, NOT on stack
+//
+// Heap:
+//   [0x3D3B38] → 7
+//
+
+// -----------------------------------------------------
+// ARRAY ALLOCATION ON HEAP
+// -----------------------------------------------------
+
+// 4️⃣ Declare another pointer
+int* a;
+//
+// - `a` is also stored on the STACK
+//
+
+// 5️⃣ Allocate array of 2 integers on heap
+a = new int[2];
+//
+// - Allocates contiguous memory on HEAP
+// - Suppose addresses are:
+//     a[0] → 0x3D3BA0
+//     a[1] → 0x3D3BA4 (example)
+//
+// Stack:
+//   a → 0x3D3BA0
+//
+// Heap:
+//   [0x3D3BA0] → uninitialized
+//   [0x3D3BA4] → uninitialized
+//
+
+// 6️⃣ Assign value to first element
+*a = 300;
+//
+// - Same as a[0] = 300
+// - Writes value 300 at heap address 0x3D3BA0
+//
+
+// 7️⃣ Assign value to second element
+*(a + 1) = 301;
+//
+// - Pointer arithmetic
+// - Moves to next int location
+// - Same as a[1] = 301
+//
+// Heap now contains:
+//   [0x3D3BA0] → 300
+//   [0x3D3BA4] → 301
+//
+
+// -----------------------------------------------------
+// IMPORTANT INTERVIEW OBSERVATIONS
+// -----------------------------------------------------
+
+// ✔ Pointers live on STACK
+// ✔ Dynamically allocated data lives on HEAP
+// ✔ Pointer stores ADDRESS, not the value
+// ✔ Dereferencing accesses heap data
+// ✔ Arrays allocated with new[] are contiguous
+//
+// -----------------------------------------------------
+// MEMORY CLEANUP (VERY IMPORTANT)
+// -----------------------------------------------------
+
+delete ptr;        // free single int
+delete[] a;        // free array
+//
+// Failing to do this causes MEMORY LEAK
+//
+
+// -----------------------------------------------------
+// ONE-LINE INTERVIEW ANSWER
+// -----------------------------------------------------
+//
+// "Pointers are stored on the stack, but the memory they
+// point to is allocated on the heap using new."
+```
+
+---
+
+### ⭐ Quick Interview Traps You Now Avoid
+
+* ❌ “Pointer data is on stack” → **Wrong**
+* ❌ “`a+1` jumps by 1 byte” → **Wrong (jumps by sizeof(int))**
+* ❌ Using `delete` for arrays → **Wrong**
+
+
+## ⭐ Common Interview Questions
+
+**Q: Which memory is fastest?**
+➡ Stack
+
+**Q: Which memory causes memory leaks?**
+➡ Heap
+
+**Q: Where are global variables stored?**
+➡ Global/Static segment
+
+**Q: Where are function calls stored?**
+➡ Stack
+

@@ -1,0 +1,118 @@
+
+// =====================================================
+// TOPIC: Dangling Pointers in C++ (Interview Perspective)
+// =====================================================
+//
+// What is a Dangling Pointer?
+// -----------------------------------------------------
+// A dangling pointer is a pointer that STILL HOLDS
+// the address of memory that has already been freed.
+//
+// After delete:
+// - Memory is released back to heap
+// - Pointer is NOT automatically updated
+// - Pointer now points to INVALID memory
+//
+// -----------------------------------------------------
+// Why Dangling Pointers are Dangerous?
+// -----------------------------------------------------
+//
+// - The freed memory may be reused by another object
+// - Accessing it causes UNDEFINED BEHAVIOR
+// - Can lead to crashes, data corruption, or security bugs
+//
+// -----------------------------------------------------
+// Example (From Slide)
+// -----------------------------------------------------
+
+int* pMark = new int(81);   // heap allocation
+// Use pMark
+delete pMark;              // heap memory freed
+
+// ❌ PROBLEM:
+// pMark STILL contains the old address
+// Memory is invalid but pointer looks valid
+//
+// This is called a DANGLING POINTER
+//
+
+// -----------------------------------------------------
+// SAFE PRACTICE: Reset Pointer After delete
+// -----------------------------------------------------
+
+pMark = nullptr;
+//
+// Now pointer does not point to freed memory
+// delete nullptr is SAFE
+//
+
+// Safe check before using pointer
+if (pMark != nullptr) {
+    // process pMark
+}
+
+// -----------------------------------------------------
+// COMMON WAYS DANGLING POINTERS ARE CREATED
+// -----------------------------------------------------
+
+// 1️⃣ delete without resetting pointer
+// 2️⃣ Returning address of local variable
+// 3️⃣ Deleting memory while another pointer still refers to it
+//
+// Example:
+int* func() {
+    int x = 10;
+    return &x;   // ❌ x is destroyed → dangling pointer
+}
+
+// -----------------------------------------------------
+// Dangling Pointer vs Memory Leak
+// -----------------------------------------------------
+//
+// Dangling Pointer:
+// - Memory is freed
+// - Pointer still exists
+//
+// Memory Leak:
+// - Memory NOT freed
+// - Pointer lost
+//
+// -----------------------------------------------------
+// How to Avoid Dangling Pointers (Interview Favorite)
+// -----------------------------------------------------
+//
+// ✔ Set pointer to nullptr after delete
+// ✔ Use smart pointers (unique_ptr, shared_ptr)
+// ✔ Follow RAII principle
+//
+// -----------------------------------------------------
+// Modern C++ Solution
+// -----------------------------------------------------
+
+#include <memory>
+
+std::unique_ptr<int> p = std::make_unique<int>(81);
+// No delete needed
+// Pointer auto-invalidated when out of scope
+//
+// -----------------------------------------------------
+// ONE-LINE INTERVIEW ANSWER
+// -----------------------------------------------------
+//
+// "A dangling pointer points to memory that has already
+// been freed, leading to undefined behavior."
+```
+
+---
+
+## ⭐ Interview Quick Checks
+
+**Q: Does delete set pointer to null?**
+➡ ❌ No
+
+**Q: Is delete nullptr safe?**
+➡ ✅ Yes
+
+**Q: Best way to avoid dangling pointers?**
+➡ Smart pointers + RAII
+

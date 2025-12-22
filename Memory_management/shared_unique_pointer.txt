@@ -1,0 +1,183 @@
+
+## ✅ 1. `unique_ptr` — Exclusive Ownership
+
+### 🔹 Interview Concept
+
+* Only **one owner** of the object at a time
+* **Cannot be copied**, only **moved**
+* Automatically deletes the object when it goes out of scope
+* **Modern replacement of `auto_ptr`**
+
+---
+
+### ✅ How to Use `unique_ptr`
+
+* Include `<memory>`
+* Create using `make_unique` (preferred)
+* Ownership can be transferred using `std::move`
+
+---
+
+### 🔹 Program: `unique_ptr` with Interview Comments
+
+```cpp
+#include <iostream>
+#include <memory>   // Required for unique_ptr
+using namespace std;
+
+/*
+ INTERVIEW PERSPECTIVE:
+ This class helps demonstrate object lifetime.
+*/
+class GameObject {
+public:
+    GameObject() {
+        cout << "GameObject Constructor Called" << endl;
+    }
+
+    ~GameObject() {
+        cout << "GameObject Destructor Called" << endl;
+    }
+};
+
+int main() {
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     unique_ptr provides exclusive ownership.
+     Only one unique_ptr can own this object.
+    */
+    unique_ptr<GameObject> ptr1 = make_unique<GameObject>();
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     Copying is NOT allowed (compile-time error)
+     unique_ptr<GameObject> ptr2 = ptr1; ❌
+    */
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     Ownership can be transferred using move semantics.
+    */
+    unique_ptr<GameObject> ptr2 = move(ptr1);
+
+    /*
+     SIDE NOTE:
+     After move, ptr1 becomes null.
+    */
+    if (!ptr1) {
+        cout << "ptr1 no longer owns the object" << endl;
+    }
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     When ptr2 goes out of scope, destructor is called automatically.
+    */
+    return 0;
+}
+```
+
+---
+
+### ⭐ One-Line Interview Answer (unique_ptr)
+
+> *“`unique_ptr` manages a dynamically allocated object with exclusive ownership and ensures automatic cleanup using RAII.”*
+
+---
+
+## ✅ 2. `shared_ptr` — Shared Ownership
+
+### 🔹 Interview Concept
+
+* **Multiple owners** can share the same object
+* Uses **reference counting**
+* Object is deleted **only when the last `shared_ptr` is destroyed**
+* Slightly slower due to reference counting overhead
+
+---
+
+### ✅ How to Use `shared_ptr`
+
+* Include `<memory>`
+* Create using `make_shared`
+* Use `use_count()` to check number of owners (for learning/debugging)
+
+---
+
+### 🔹 Program: `shared_ptr` with Interview Comments
+
+```cpp
+#include <iostream>
+#include <memory>   // Required for shared_ptr
+using namespace std;
+
+/*
+ INTERVIEW PERSPECTIVE:
+ Demonstrates shared ownership and reference counting.
+*/
+class GameObject {
+public:
+    GameObject() {
+        cout << "GameObject Constructor Called" << endl;
+    }
+
+    ~GameObject() {
+        cout << "GameObject Destructor Called" << endl;
+    }
+};
+
+int main() {
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     make_shared creates an object and manages it with reference counting.
+    */
+    shared_ptr<GameObject> ptr1 = make_shared<GameObject>();
+
+    cout << "Reference count: " << ptr1.use_count() << endl;
+
+    {
+        /*
+         INTERVIEW PERSPECTIVE:
+         ptr2 shares ownership of the same object.
+        */
+        shared_ptr<GameObject> ptr2 = ptr1;
+
+        cout << "Reference count after sharing: "
+             << ptr1.use_count() << endl;
+    }
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     ptr2 is destroyed here, reference count decreases.
+    */
+    cout << "Reference count after ptr2 destroyed: "
+         << ptr1.use_count() << endl;
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     When ptr1 goes out of scope, reference count becomes zero,
+     so the object is destroyed.
+    */
+    return 0;
+}
+```
+
+---
+
+## 🔍 Interview Comparison (Must Know)
+
+| Feature                  | `unique_ptr` | `shared_ptr`          |
+| ------------------------ | ------------ | --------------------- |
+| Ownership                | Single       | Multiple              |
+| Copy allowed             | ❌ No         | ✅ Yes                 |
+| Move allowed             | ✅ Yes        | ✅ Yes                 |
+| Overhead                 | Low          | Higher (ref counting) |
+| Replacement for auto_ptr | ✅ Yes        | ❌ No                  |
+
+---
+
+## 🎯 Strong Interview Closing Line
+
+> *“Use `unique_ptr` by default for ownership, and use `shared_ptr` only when multiple objects genuinely need to share ownership.”*
+

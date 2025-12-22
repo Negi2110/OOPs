@@ -1,0 +1,125 @@
+## 📌 Inline Functions — Interview Perspective (Theory)
+
+An **inline function** is a function where the compiler attempts to **replace the function call with the actual function code** at compile time. This helps eliminate the overhead of function calls (such as stack operations), making execution faster. Inline functions are typically used for **small, frequently called functions**. However, using the `inline` keyword is only a **request**, not a command—**the compiler may ignore it** if the function is too large, complex, recursive, or unsuitable for inlining. Functions defined **inside a class definition are automatically treated as inline**, even if the `inline` keyword is not explicitly written.
+
+---
+
+## 🧠 Key Interview Points (Side Notes)
+
+* Inline functions improve **performance**, not logic
+* They reduce **function call overhead**
+* Best suited for **small functions**
+* Not suitable for **recursive or complex functions**
+* `inline` is only a **compiler suggestion**
+* Functions defined inside a class are **implicitly inline**
+
+---
+
+## 💻 Program 1: Simple Inline Function (with Interview Comments)
+
+```cpp
+#include <iostream>
+using namespace std;
+
+/*
+ INTERVIEW PERSPECTIVE:
+ inline keyword suggests the compiler to replace
+ the function call with the function body.
+*/
+inline int square(int x) {
+    return x * x;
+}
+
+int main() {
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     Instead of calling square(5),
+     the compiler may directly insert (5 * 5).
+    */
+    cout << "Square of 5 is: " << square(5) << endl;
+
+    return 0;
+}
+```
+
+---
+
+## 💻 Program 2: Inline Function Inside a Class
+
+```cpp
+#include <iostream>
+using namespace std;
+
+/*
+ INTERVIEW PERSPECTIVE:
+ Functions defined inside a class
+ are automatically treated as inline.
+*/
+class Math {
+public:
+    int add(int a, int b) {
+        // INTERVIEW NOTE: Implicitly inline
+        return a + b;
+    }
+};
+
+int main() {
+
+    Math obj;
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     add() may be expanded inline by the compiler.
+    */
+    cout << "Sum: " << obj.add(3, 4) << endl;
+
+    return 0;
+}
+```
+
+---
+
+## 💻 Program 3: Inline Keyword in Declaration or Definition
+
+```cpp
+#include <iostream>
+using namespace std;
+
+/*
+ INTERVIEW PERSPECTIVE:
+ If either declaration OR definition
+ includes inline, the function can be inline.
+*/
+inline int multiply(int a, int b); // inline in declaration
+
+int multiply(int a, int b) {        // definition without inline
+    return a * b;
+}
+
+int main() {
+    cout << "Product: " << multiply(4, 5) << endl;
+    return 0;
+}
+```
+
+---
+
+## ❌ When Inline Is NOT a Good Choice (Interview Favorite)
+
+```cpp
+inline int factorial(int n) {
+    // INTERVIEW PERSPECTIVE:
+    // Recursive functions are not suitable for inlining
+    if (n <= 1)
+        return 1;
+    return n * factorial(n - 1);
+}
+```
+
+---
+
+## ✅ One-Line Interview Answer (Very Important)
+
+> *“An inline function is a compiler optimization technique where the function call is replaced with the function body to reduce call overhead, but the compiler may ignore the request if the function is complex.”*
+

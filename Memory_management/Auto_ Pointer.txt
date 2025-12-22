@@ -1,0 +1,91 @@
+Below is the **Auto Pointer example explained with code**, where the **comments are written from an interview perspective and side notes**, exactly matching what interviewers look for 👇
+
+```cpp
+#include <iostream>
+#include <memory>   // Interview point: auto_ptr is defined here
+using namespace std;
+
+/*
+ INTERVIEW PERSPECTIVE:
+ This class is used to demonstrate constructor and destructor calls.
+ The output helps prove automatic memory management.
+*/
+class GameObject {
+public:
+    // Constructor
+    GameObject() {
+        cout << "Constructor Invoked" << endl;
+    }
+
+    // Destructor
+    ~GameObject() {
+        cout << "Destructor Invoked" << endl;
+    }
+};
+
+/*
+ INTERVIEW PERSPECTIVE:
+ This function creates an object using auto_ptr.
+ The object is automatically destroyed when the auto_ptr
+ goes out of scope.
+*/
+void f() {
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     auto_ptr takes ownership of the dynamically allocated object.
+     No need to explicitly call delete.
+    */
+    auto_ptr<GameObject> obj(new GameObject());
+
+    /*
+     SIDE NOTE (IMPORTANT):
+     When this function ends, obj goes out of scope,
+     so the destructor of GameObject is called automatically.
+    */
+}
+
+int main() {
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     Calling function f().
+     Memory is allocated inside f() and cleaned up automatically.
+    */
+    f();
+
+    return 0;
+}
+```
+
+---
+
+## 🧠 What Interviewers Expect You to Explain (Side Explanation)
+
+* `auto_ptr` is a **smart pointer** provided by early C++ standards
+* It automatically deletes the object it owns when it goes out of scope
+* This prevents **memory leaks**
+* Ownership of the object belongs to **only one auto_ptr**
+
+---
+
+## ⚠️ VERY IMPORTANT INTERVIEW NOTE
+
+> **`auto_ptr` is deprecated in C++11 and removed in C++17**
+
+### Why interviewers still ask about it:
+
+* To test understanding of **ownership semantics**
+* To see if you know **modern replacements**
+
+---
+
+## ✅ Modern Replacement (Mention in Interview)
+
+* `unique_ptr` → exclusive ownership (replacement for `auto_ptr`)
+* `shared_ptr` → shared ownership
+
+**Strong interview answer line:**
+
+> *“`auto_ptr` provides automatic memory management using RAII, but it is deprecated due to unsafe ownership transfer semantics and has been replaced by `unique_ptr`.”*
+

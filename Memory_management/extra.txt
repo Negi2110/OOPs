@@ -1,0 +1,75 @@
+
+## 📌 Interview-Perspective Explanation (Theory)
+
+In the given example, `obj` is a **local pointer** that points to memory allocated dynamically using `new`. Normally, when we use a raw pointer, the destructor of the object is called **only if we explicitly use `delete`**. If `delete` is forgotten, the dynamically allocated memory remains in use, causing a **memory leak**. However, when `obj` is an `auto_ptr`, it follows the **RAII (Resource Acquisition Is Initialization)** principle. This means the `auto_ptr` takes ownership of the dynamically allocated object and **automatically deletes it when the pointer goes out of scope**. As a result, the destructor of the object is invoked automatically without the programmer needing to write an explicit `delete` statement.
+
+---
+
+## 🧠 Key Interview Points (Side Notes)
+
+* With **raw pointers**, memory must be freed manually using `delete`
+* Forgetting `delete` leads to **memory leaks**
+* `auto_ptr` performs **automatic cleanup**
+* Destructor is called when `auto_ptr` goes out of scope
+* `auto_ptr` is deprecated, but the concept leads to `unique_ptr`
+
+---
+
+## 💻 Code Example with Interview Comments
+
+```cpp
+#include <iostream>
+#include <memory>   // Required for auto_ptr (legacy)
+using namespace std;
+
+/*
+ INTERVIEW PERSPECTIVE:
+ This class is used to observe constructor and destructor calls.
+*/
+class GameObject {
+public:
+    GameObject() {
+        cout << "Constructor Invoked" << endl;
+    }
+
+    ~GameObject() {
+        cout << "Destructor Invoked" << endl;
+    }
+};
+
+void f() {
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     obj is a local auto_ptr managing a dynamically allocated object.
+     Normally, without auto_ptr, we would need an explicit delete.
+    */
+    auto_ptr<GameObject> obj(new GameObject());
+
+    /*
+     SIDE NOTE:
+     No delete statement is written here.
+     auto_ptr will automatically delete the object
+     when obj goes out of scope.
+    */
+}
+
+int main() {
+
+    /*
+     INTERVIEW PERSPECTIVE:
+     When f() finishes execution, obj goes out of scope,
+     so the destructor of GameObject is called automatically.
+    */
+    f();
+
+    return 0;
+}
+```
+
+---
+
+## ✅ One-Line Interview Answer
+
+> *“In this example, `obj` is a local `auto_ptr` that automatically deletes the dynamically allocated object when it goes out of scope, ensuring the destructor is called without requiring an explicit `delete`.”*
+

@@ -1,0 +1,139 @@
+// =====================================================
+// TOPIC: Memory Leaks in C++ (Interview Perspective)
+// =====================================================
+//
+// What is a Memory Leak?
+// -----------------------------------------------------
+// A memory leak occurs when:
+// - Memory is allocated on the HEAP
+// - But NEVER freed using delete / free
+//
+// Result:
+// - Program keeps consuming memory
+// - Eventually leads to performance degradation
+//   or program crash
+//
+// -----------------------------------------------------
+// Example 1: Memory Leak due to Scope End
+// -----------------------------------------------------
+
+void leak() {
+    int* mark = new int(45);
+    // ❌ delete is NOT called
+} 
+//
+// Explanation:
+// - mark is a LOCAL (stack) variable
+// - When function ends, mark goes out of scope
+// - Heap memory (45) is STILL allocated
+// - Pointer is lost → MEMORY LEAK
+//
+
+// -----------------------------------------------------
+// Correct Fix (Option 1): Free memory inside function
+// -----------------------------------------------------
+
+void noLeak() {
+    int* mark = new int(45);
+    delete mark;       // ✅ memory freed
+    mark = nullptr;
+}
+
+// -----------------------------------------------------
+// Correct Fix (Option 2): Return pointer to caller
+// -----------------------------------------------------
+
+int* createValue() {
+    return new int(45);
+}
+//
+// Caller must delete it
+//
+
+// -----------------------------------------------------
+// Example 2: Memory Leak due to Reassignment
+// -----------------------------------------------------
+
+void leakAgain() {
+    int* mark = new int(45);   // heap allocation #1
+    mark = new int(66);        // heap allocation #2
+    delete mark;               // frees ONLY 66
+}
+//
+// Explanation:
+// - Memory storing 45 is LOST
+// - Pointer now points to new memory (66)
+// - First allocation is never deleted → LEAK
+//
+
+// -----------------------------------------------------
+// Correct Fix
+// -----------------------------------------------------
+
+void noLeakAgain() {
+    int* mark = new int(45);
+    delete mark;               // free first allocation
+    mark = new int(66);
+    delete mark;
+    mark = nullptr;
+}
+
+// -----------------------------------------------------
+// COMMON CAUSES OF MEMORY LEAKS (Interview Favorite)
+// -----------------------------------------------------
+
+// 1️⃣ Forgetting delete
+// 2️⃣ Pointer reassignment without delete
+// 3️⃣ Losing pointer to heap memory
+// 4️⃣ Not deleting arrays with delete[]
+// 5️⃣ Exception thrown before delete
+//
+// -----------------------------------------------------
+// Memory Leak vs Dangling Pointer
+// -----------------------------------------------------
+
+// Memory Leak:
+// - Memory NOT freed
+// - Pointer LOST
+//
+// Dangling Pointer:
+// - Memory FREED
+// - Pointer STILL EXISTS
+//
+// -----------------------------------------------------
+// How to PREVENT Memory Leaks (Modern C++)
+// -----------------------------------------------------
+
+// ✔ Use RAII
+// ✔ Use smart pointers
+// ✔ Use STL containers (vector, string, map)
+//
+// Example:
+#include <memory>
+
+void safe() {
+    std::unique_ptr<int> p = std::make_unique<int>(45);
+    // automatically freed
+}
+
+// -----------------------------------------------------
+// One-Line Interview Answer
+// -----------------------------------------------------
+//
+// "A memory leak happens when dynamically allocated
+// memory is not freed, causing permanent loss of memory."
+```
+
+---
+
+## ⭐ Quick Interview Q&A
+
+**Q: Does OS free memory after program ends?**
+➡ Yes, but leaks are still serious for long-running programs.
+
+**Q: Best way to avoid memory leaks?**
+➡ Smart pointers + RAII.
+
+**Q: Is reassignment without delete a leak?**
+➡ ✅ Yes.
+

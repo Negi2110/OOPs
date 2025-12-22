@@ -1,0 +1,154 @@
+// =====================================================
+// TOPIC: malloc() in C / C++ (Interview Perspective)
+// =====================================================
+//
+// What is malloc?
+// -----------------------------------------------------
+// malloc() stands for MEMORY ALLOCATION.
+// It is a C standard library function used to allocate
+// a BLOCK of memory dynamically on the HEAP.
+//
+// Header:
+// #include <cstdlib>   // C++
+// #include <stdlib.h>  // C
+//
+// -----------------------------------------------------
+// Syntax
+// -----------------------------------------------------
+//
+// void* malloc(size_t size);
+//
+// - size: number of BYTES to allocate
+// - returns: void* (generic pointer)
+//
+// -----------------------------------------------------
+// Example
+// -----------------------------------------------------
+
+int* p = (int*)malloc(sizeof(int));
+//
+// Memory:
+// - Heap memory of sizeof(int) bytes allocated
+// - malloc returns void*
+// - Explicit type casting is REQUIRED in C++
+//
+// -----------------------------------------------------
+// IMPORTANT: malloc DOES NOT initialize memory
+// -----------------------------------------------------
+
+// Value inside *p is GARBAGE until assigned
+*p = 10;
+
+// -----------------------------------------------------
+// Freeing Memory
+// -----------------------------------------------------
+
+free(p);   // releases heap memory
+p = nullptr;
+
+// -----------------------------------------------------
+// malloc vs new (VERY IMPORTANT INTERVIEW QUESTION)
+// -----------------------------------------------------
+
+/*
+malloc:
+- C function
+- Allocates raw memory only
+- Does NOT call constructor
+- Returns void*
+- Needs explicit casting in C++
+- Must be freed using free()
+- Returns NULL on failure
+
+new:
+- C++ operator
+- Allocates memory + calls constructor
+- Type-safe
+- No casting required
+- Must be freed using delete
+- Throws std::bad_alloc on failure
+*/
+
+// -----------------------------------------------------
+// Example with Object (WRONG usage)
+// -----------------------------------------------------
+
+class Test {
+public:
+    Test() { std::cout << "Constructor\n"; }
+};
+
+Test* t = (Test*)malloc(sizeof(Test));
+//
+// ❌ Constructor is NOT called
+// ❌ Object is NOT properly initialized
+//
+
+free(t);   // ❌ Destructor NOT called
+
+// -----------------------------------------------------
+// Correct way in C++
+// -----------------------------------------------------
+
+Test* t2 = new Test();  // constructor called
+delete t2;             // destructor called
+
+// -----------------------------------------------------
+// malloc for ARRAYS
+// -----------------------------------------------------
+
+int* arr = (int*)malloc(5 * sizeof(int));
+//
+// arr points to 5 contiguous ints on heap
+//
+
+free(arr);
+
+// -----------------------------------------------------
+// Common Interview Mistakes
+// -----------------------------------------------------
+
+// ❌ Using delete with malloc
+// ❌ Using free with new
+// ❌ Forgetting to free memory
+// ❌ Assuming malloc initializes memory
+//
+// -----------------------------------------------------
+// When should malloc be used?
+// -----------------------------------------------------
+
+// ✔ C programs
+// ✔ Low-level memory control
+// ✔ Interfacing with C libraries
+//
+// ❌ NOT recommended in modern C++
+//
+// -----------------------------------------------------
+// Modern C++ Recommendation
+// -----------------------------------------------------
+
+// Prefer:
+// - new / delete (rarely)
+// - std::vector
+// - std::unique_ptr / std::shared_ptr
+//
+// -----------------------------------------------------
+// ONE-LINE INTERVIEW ANSWER
+// -----------------------------------------------------
+//
+// "malloc allocates raw memory on the heap without
+// calling constructors and must be freed using free()."
+```
+
+---
+
+## ⭐ Ultra-Short Comparison (Interview)
+
+| Feature     | malloc | new       |
+| ----------- | ------ | --------- |
+| Language    | C      | C++       |
+| Constructor | ❌ No   | ✅ Yes     |
+| Type safety | ❌ No   | ✅ Yes     |
+| Failure     | NULL   | exception |
+| Free using  | free   | delete    |
+

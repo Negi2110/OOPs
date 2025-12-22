@@ -1,0 +1,307 @@
+
+// =======================
+// TOPIC: Destructor in C++
+// =======================
+
+// What is a Destructor?
+// - A destructor is a special member function of a class
+// - It is called automatically when an object is destroyed
+// - Used to release resources such as heap memory, files, mutexes, sockets, etc.
+
+// Key Properties (INTERVIEW POINTS):
+// 1. Destructor name is same as class name prefixed with '~'
+// 2. It has NO return type
+// 3. It takes NO arguments
+// 4. It must be PUBLIC
+// 5. It is invoked automatically (cannot be called manually like a normal function)
+// 6. One class can have ONLY ONE destructor (no overloading)
+
+// When is Destructor called?
+// - When a local object goes out of scope
+// - When delete is called on a dynamically allocated object
+// - When program exits (for global/static objects)
+// - When a container (vector, map, etc.) destroys its elements
+
+// Why Destructor is important?
+// - To avoid memory leaks
+// - To free heap memory allocated using new
+// - To release system resources
+// - To follow RAII (Resource Acquisition Is Initialization)
+
+// VERY IMPORTANT INTERVIEW LINE:
+// - "If a class allocates memory on heap, it MUST release it in destructor"
+
+// =======================
+// Example: Destructor Usage
+// =======================
+
+#include <iostream>
+using namespace std;
+
+class Test {
+    int* ptr;   // pointer to heap memory
+
+public:
+    Test() {
+        ptr = new int(10);   // allocate memory on heap
+        cout << "Constructor: Memory Allocated\n";
+    }
+
+    ~Test() {
+        delete ptr;          // free heap memory
+        cout << "Destructor: Memory Freed\n";
+    }
+};
+
+int main() {
+    Test obj;   // Constructor called here
+               // Destructor will be called automatically
+    return 0;
+}
+
+// Output:
+// Constructor: Memory Allocated
+// Destructor: Memory Freed
+```
+
+---
+
+## ⭐ One-Line Interview Answers
+
+```cpp
+// Q: What is a destructor?
+// A: A destructor is a special member function used to clean up resources
+//    when an object is destroyed.
+
+// Q: Why destructor is needed?
+// A: To prevent memory leaks and release resources like heap memory.
+
+// Q: When is destructor called?
+// A: Automatically when an object goes out of scope or delete is called.
+
+// Q: Can destructor be overloaded?
+// A: No, a class can have only one destructor.
+```
+
+---
+
+## 🧠 Common Interview Trap
+
+```cpp
+// ❌ Wrong thinking:
+// Destructor deletes stack memory
+
+// ✅ Correct:
+// Destructor only releases resources allocated by the object,
+// especially heap memory (new, malloc, files, locks, etc.)
+Great question — this is a **classic interview doubt** 👍
+Short answer: **`delete` and destructor are NOT the same thing — they work together.**
+
+Let me explain **clearly, step-by-step**, in **interview language**.
+
+---
+
+## 🔑 Short Answer (Interview Ready)
+
+> **`delete` frees memory, but the destructor cleans up the object.
+> You need BOTH.**
+
+---
+
+## 🔍 What actually happens when you write `delete ptr;`
+
+```cpp
+delete ptr;
+```
+
+This does **TWO things**, in this exact order:
+
+```cpp
+1️⃣ Calls the destructor of the object
+2️⃣ Frees the heap memory
+```
+
+So internally it behaves like:
+
+```cpp
+ptr->~ClassName();   // destructor call
+operator delete(ptr); // memory deallocation
+```
+
+👉 **You do NOT call destructor manually — `delete` does it for you.**
+
+---
+
+## 🧠 Then WHY do we need a destructor?
+
+Because **`delete` only knows how to free raw memory**,
+but **it does NOT know what resources your class is using**.
+
+### Example: Class without destructor ❌
+
+```cpp
+class Test {
+    int* data;
+public:
+    Test() {
+        data = new int(10);
+    }
+};
+
+int main() {
+    Test* obj = new Test();
+    delete obj;   // ❌ memory leak!
+}
+```
+
+### What happens?
+
+* `delete` frees memory for `obj`
+* BUT `data` inside the object is **never deleted**
+* 💥 **Memory leak**
+
+---
+
+## ✅ Correct: Destructor cleans resources
+
+```cpp
+class Test {
+    int* data;
+public:
+    Test() {
+        data = new int(10);
+    }
+
+    ~Test() {
+        delete data;  // ✅ cleanup
+    }
+};
+
+int main() {
+    Test* obj = new Test();
+    delete obj;   // destructor + memory free
+}
+```
+
+✔ Destructor releases internal resources
+✔ `delete` frees object memory
+
+---
+
+## 🧵 Even MORE important case: stack objects
+
+```cpp
+void func() {
+    Test obj;   // stack object
+}   // destructor called automatically here
+```
+
+⚠️ **No `delete` here**
+But **destructor still runs**
+
+👉 This is why destructors are essential.
+
+---
+
+## 🧠 Interview Comparison Table
+
+| Feature                       | `delete` | Destructor |
+| ----------------------------- | -------- | ---------- |
+| Frees heap memory             | ✅        | ❌          |
+| Cleans internal resources     | ❌        | ✅          |
+| Called automatically          | ❌        | ✅          |
+| Runs for stack objects        | ❌        | ✅          |
+| Manages files/mutexes/sockets | ❌        | ✅          |
+
+---
+
+## ⭐ Golden Interview Lines (MEMORIZE)
+
+```cpp
+// delete calls destructor, but destructor does NOT delete memory
+// delete frees memory, destructor releases resources
+// destructor is needed even when delete is used
+// destructor is essential for stack objects
+```
+
+---
+
+## 🔥 Final One-Line Interview Answer
+
+> **“`delete` deallocates memory, but the destructor is responsible for
+> cleaning up the object’s resources — both are required.”**
+
+---
+Here’s a **clean C++ example** of a **constructor and destructor**, rewritten from the image and **fully explained with comments** 👇
+
+```cpp
+#include <iostream>
+using namespace std;
+
+// A simple NPC class (for demonstration)
+class NPC {
+public:
+    NPC() {
+        cout << "NPC created" << endl;
+    }
+
+    ~NPC() {
+        cout << "NPC destroyed" << endl;
+    }
+};
+
+// Game class that manages dynamic memory
+class Game {
+private:
+    NPC* npcs;   // Pointer to dynamically allocated array of NPCs
+
+public:
+    // Constructor
+    // This runs automatically when a Game object is created
+    Game(int numberNPC) {
+        // Dynamically allocate an array of NPC objects
+        npcs = new NPC[numberNPC];
+        cout << "Game started with " << numberNPC << " NPCs" << endl;
+    }
+
+    // Destructor
+    // This runs automatically when a Game object is destroyed
+    ~Game() {
+        // Free the dynamically allocated memory
+        delete[] npcs;
+        cout << "Game ended and NPCs deleted" << endl;
+    }
+};
+
+int main() {
+    // Creating a Game object
+    // Constructor is called here
+    Game g(3);
+
+    // When main() ends, object g goes out of scope
+    // Destructor is called automatically
+    return 0;
+}
+```
+
+### 🔑 Key Concepts Explained
+
+* **Constructor (`Game(int numberNPC)`)**
+
+  * Runs automatically when an object is created
+  * Allocates memory using `new`
+  * Initializes resources
+
+* **Destructor (`~Game()`)**
+
+  * Runs automatically when the object goes out of scope
+  * Cleans up memory using `delete[]`
+  * Prevents **memory leaks**
+
+* **Why `delete[]` and not `delete`?**
+
+  * Because `new NPC[numberNPC]` creates an **array**
+  * Arrays must be freed with `delete[]`
+
+In C++, the `delete` (or `delete[]`) statement is responsible for **both** calling the destructor and freeing the memory that was allocated using `new` (or `new[]`). A destructor by itself does **not** automatically free memory; instead, it is a special function that runs when an object is destroyed and is used to clean up resources that the object owns. 
+In practice, this means that inside the destructor you explicitly write `delete` or `delete[]` for any dynamically allocated memory. When `delete[] npcs;` is executed, C++ first calls the destructor of each `NPC` object in the array and then releases the memory back to the system. If you forget to use `delete` or `delete[]` inside the destructor, the memory remains allocated, causing a memory leak.

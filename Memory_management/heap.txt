@@ -1,0 +1,228 @@
+
+// =====================================================
+// TOPIC: Heap Memory in C++ (Interview Perspective)
+// =====================================================
+//
+// What is Heap?
+// -----------------------------------------------------
+// Heap is a region of memory used for DYNAMIC memory allocation.
+// Memory on heap is allocated at RUNTIME using:
+//   - new / delete (C++)
+//   - malloc / free (C)
+//
+// -----------------------------------------------------
+// Key Characteristics of Heap
+// -----------------------------------------------------
+//
+// 1. Dynamic Allocation
+// - Variables/objects created using `new` are stored on heap.
+// - Size does NOT need to be known at compile time.
+//
+// Example:
+// int* p = new int(10);   // allocated on heap
+//
+// -----------------------------------------------------
+// 2. Lifetime
+// -----------------------------------------------------
+// - Heap objects live UNTIL they are explicitly deallocated.
+// - They can outlive the function that created them.
+//
+// Example:
+// int* create() {
+//     int* x = new int(5);
+//     return x;          // valid even after function ends
+// }
+//
+// -----------------------------------------------------
+// 3. Access Method
+// -----------------------------------------------------
+// - Heap memory is accessed via POINTERS or REFERENCES.
+// - Direct access (like stack variables) is NOT possible.
+//
+// -----------------------------------------------------
+// 4. Size
+// -----------------------------------------------------
+// - Heap is much larger than stack.
+// - Suitable for large objects, data structures,
+//   linked lists, trees, vectors, etc.
+//
+// -----------------------------------------------------
+// 5. Performance
+// -----------------------------------------------------
+// - Slower than stack due to dynamic allocation overhead.
+// - Requires manual memory management.
+//
+// -----------------------------------------------------
+// 6. Responsibility
+// -----------------------------------------------------
+// - Programmer is responsible for freeing memory.
+// - Forgetting to delete leads to MEMORY LEAK.
+//
+// Example:
+// delete p;   // must be called
+//
+// -----------------------------------------------------
+// Heap vs Stack (Quick Interview Comparison)
+// -----------------------------------------------------
+//
+// Stack:
+// - Automatic allocation/deallocation
+// - Faster
+// - Limited size
+// - Function scoped
+//
+// Heap:
+// - Manual allocation/deallocation
+// - Slower
+// - Large size
+// - Global lifetime (as long as pointer exists)
+//
+// -----------------------------------------------------
+// One-Line Interview Answer
+// -----------------------------------------------------
+//
+// "Heap is used for dynamic memory allocation where objects
+//  can persist beyond function scope and are managed manually."
+```
+
+Here is a **clear, interview-ready explanation of the C++ `new` operator**, written in **comment style**, aligned exactly with your slide and expanded with **important interview points**.
+
+---
+
+```cpp
+// =====================================================
+// TOPIC: new Operator in C++ (Interview Perspective)
+// =====================================================
+//
+// What is `new`?
+// -----------------------------------------------------
+// `new` is an operator used to allocate memory dynamically
+// from the HEAP (also called free store).
+//
+// It performs TWO operations:
+// 1. Allocates memory
+// 2. Calls constructor (if any)
+//
+// -----------------------------------------------------
+// Syntax
+// -----------------------------------------------------
+//
+// type* pointerName = new type;
+//
+// Example:
+int* pAge = new int;   // allocates memory for int on heap
+//
+// `pAge` stores the ADDRESS of the allocated memory
+//
+// -----------------------------------------------------
+// Initialization with new
+// -----------------------------------------------------
+//
+// Memory allocated using new can be INITIALIZED at the
+// same time.
+//
+// Example:
+int* pAge2 = new int(21);   // value initialized to 21
+//
+// -----------------------------------------------------
+// new with Objects
+// -----------------------------------------------------
+//
+// When new is used with a class:
+// - Memory is allocated
+// - Constructor is called automatically
+//
+// Example:
+class Person {
+public:
+    Person(int a) { age = a; }
+    int age;
+};
+
+Person* p = new Person(30);
+//
+// -----------------------------------------------------
+// Accessing Heap Memory
+// -----------------------------------------------------
+//
+// Heap memory is accessed using POINTERS or REFERENCES.
+//
+// Example:
+*pAge = 25;
+//
+// -----------------------------------------------------
+// Deallocation (VERY IMPORTANT)
+// -----------------------------------------------------
+//
+// Memory allocated using `new` MUST be released using `delete`.
+//
+// Example:
+delete pAge;
+delete pAge2;
+delete p;
+//
+// Failure to delete causes MEMORY LEAK.
+//
+// -----------------------------------------------------
+// new vs malloc (Interview Favorite)
+// -----------------------------------------------------
+//
+// new:
+// - C++ operator
+// - Calls constructor
+// - Type-safe
+// - Throws exception on failure (std::bad_alloc)
+//
+// malloc:
+// - C function
+// - Does NOT call constructor
+// - Returns void*
+// - Returns NULL on failure
+//
+// -----------------------------------------------------
+// Common Interview Pitfalls
+// -----------------------------------------------------
+//
+// ❌ Forgetting to call delete
+// ❌ Using delete instead of delete[] for arrays
+// ❌ Double delete
+// ❌ Memory leak
+//
+// Example (Array):
+int* arr = new int[10];
+delete[] arr;   // correct
+//
+// -----------------------------------------------------
+// One-Line Interview Answer
+// -----------------------------------------------------
+//
+// "`new` allocates memory on the heap, returns its address,
+//  and initializes the object by calling its constructor."
+```
+
+---
+
+### ⭐ Quick Interview Q&A
+
+**Q: What happens if `new` fails?**
+➡ Throws `std::bad_alloc` exception.
+
+**Q: Does `new` return NULL?**
+➡ ❌ No (unless `nothrow` version is used).
+
+**Q: Is heap memory automatically freed?**
+➡ ❌ No, programmer must delete it.
+
+
+
+### ⭐ Common Interview Follow-ups
+
+**Q: Why heap is slower than stack?**
+➡ Because heap allocation involves OS-level memory management.
+
+**Q: What happens if delete is not called?**
+➡ Memory leak occurs.
+
+**Q: How does modern C++ avoid heap issues?**
+➡ Using **RAII**, **smart pointers (`unique_ptr`, `shared_ptr`)**, and **containers**.
+
